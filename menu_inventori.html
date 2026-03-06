@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="menu.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <aside>
+        <h3>Prima Farm</h3>
+        <hr>
+
+        <nav>
+            <ul>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="menu_inventori.html">Inventori</a></li>
+                <li><a href="menu_produksi.html">Produksi</a></li>
+                <li><a href="menu_transaksikeuangan.html">Transaksi Keuangan</a></li>
+                <li><a href="menu_jadwalvaksinasi.html">Jadwal Vaksinasi</a></li>
+            </ul>
+        </nav>
+
+        <a href="login.html" class="logout-button">Logout</a>
+
+    </aside>
+
+    <main>
+
+    <h1>Inventori Ayam</h1>
+    <p>Kelola data populasi ayam</p>
+
+    <div class="top-bar">
+        <input type="text" placeholder="Cari kandang atau jenis ayam...">
+        <a href="inventori.html" class="btn-tambah">+ Tambah Data</a>
+    </div>
+
+    <div class="card-container">
+
+        <div class="card">
+            <p>Total ayam</p>
+            <h2>158</h2>
+        </div>
+
+        <div class="card">
+            <p>Ayam Produktif</p>
+            <h2 class="hijau">158</h2>
+            <span>18-30 minggu</span>
+        </div>
+
+        <div class="card">
+            <p>Total Kandang</p>
+            <h2>158</h2>
+        </div>
+
+    </div>
+
+    <div class="table-box">
+
+        <h3>Riwayat</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Kandang</th>
+                    <th>Jumlah</th>
+                    <th>Umur (Minggu)</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Kandang A</td>
+                    <td>1,250 ekor</td>
+                    <td>24 Minggu</td>
+                    <td class="status">Produktif</td>
+                    <td>🗑</td>
+                </tr>
+
+                <tr>
+                    <td>Kandang B</td>
+                    <td>1,480 ekor</td>
+                    <td>18 Minggu</td>
+                    <td class="status">Produktif</td>
+                    <td>🗑</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    </main>
+</div>
+
+</body>
+</html>
