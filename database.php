@@ -77,3 +77,4 @@
     jumlah_telur_busuk INT,
     FOREIGN KEY (id_produksi) REFERENCES produksi_telur(id_produksi)
     );"
+    
