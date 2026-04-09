@@ -1,5 +1,4 @@
 <?php
-// Koneksi ke database
 $host = "localhost";
 $user = "root";
 $pass = "";
@@ -15,15 +14,12 @@ if (!$conn) {
 $query_ayam = mysqli_query($conn, "SELECT SUM(total_ayam) as total FROM blok_kandang");
 $data_ayam = mysqli_fetch_assoc($query_ayam);
 
-// 2. Ambil Total Blok Kandang
 $query_blok = mysqli_query($conn, "SELECT COUNT(id_blok_kandang) as total FROM blok_kandang");
 $data_blok = mysqli_fetch_assoc($query_blok);
 
-// 3. Ambil Total Produksi Telur (Keseluruhan)
 $query_telur = mysqli_query($conn, "SELECT SUM(total_telur) as total FROM produksi_telur");
 $data_telur = mysqli_fetch_assoc($query_telur);
 
-// 4. Ambil 5 Transaksi Terakhir
 $query_transaksi = mysqli_query($conn, "SELECT * FROM transaksi ORDER BY tanggal_transaksi DESC LIMIT 5");
 ?>
 
