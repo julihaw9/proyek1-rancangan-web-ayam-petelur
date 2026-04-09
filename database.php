@@ -21,4 +21,38 @@
     FOREIGN KEY (id_petugas) REFERENCES petugas(id_petugas),
     FOREIGN KEY (id_blok_kandang) REFERENCES blok_kandang(id_blok_kandang)
     );"
+    $transaksi = "CREATE TABLE transaksi (
+    id_transaksi INT PRIMARY KEY AUTO_INCREMENT,
+    id_petugas INT,
+    tanggal_transaksi DATE,
+    jenis_transaksi CHAR(20),
+    FOREIGN KEY (id_petugas) REFERENCES petugas(id_petugas)
+    );"
+    $pengeluaran = "CREATE TABLE pengeluaran (
+    id_pengeluaran INT PRIMARY KEY AUTO_INCREMENT,
+    id_transaksi INT,
+    keterangan TEXT,
+    total_uang INT,
+    FOREIGN KEY (id_transaksi) REFERENCES transaksi(id_transaksi)
+    );"
+    $pemasukan_telur = "CREATE TABLE pemasukan_telur (
+    id_pemasukan_telur INT PRIMARY KEY AUTO_INCREMENT,
+    id_transaksi INT,
+    id_produksi INT,
+    jumlah_telur INT,
+    keterangan TEXT,
+    total_uang INT,
+    FOREIGN KEY (id_transaksi) REFERENCES transaksi(id_transaksi),
+    FOREIGN KEY (id_produksi) REFERENCES produksi_telur(id_produksi)
+    );"
+    $pemasukan_ayam = "CREATE TABLE pemasukan_ayam (
+    id_pemasukan_ayam_afkir INT PRIMARY KEY AUTO_INCREMENT,
+    id_transaksi INT,
+    id_blok_kandang INT,
+    keterangan TEXT,
+    jumlah_ayam INT,
+    total_uang INT,
+    FOREIGN KEY (id_transaksi) REFERENCES transaksi(id_transaksi),
+    FOREIGN KEY (id_blok_kandang) REFERENCES blok_kandang(id_blok_kandang)
+    );"
 ?>
