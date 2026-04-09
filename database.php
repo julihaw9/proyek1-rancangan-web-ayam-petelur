@@ -55,4 +55,25 @@
     FOREIGN KEY (id_transaksi) REFERENCES transaksi(id_transaksi),
     FOREIGN KEY (id_blok_kandang) REFERENCES blok_kandang(id_blok_kandang)
     );"
-?>
+    $status_vaksinasi = "CREATE TABLE status_vaksinasi (
+    id_status_vaksinasi INT PRIMARY KEY AUTO_INCREMENT,
+    id_jadwal_vaksinasi INT,
+    tanggal_vaksinasi DATE,
+    status_vaksinasi CHAR(20),
+    FOREIGN KEY (id_jadwal_vaksinasi) REFERENCES jadwal_vaksinasi(id_jadwal_vaksinasi)
+    );"
+    $produksi_telur = "CREATE TABLE produksi_telur (
+    id_produksi INT PRIMARY KEY AUTO_INCREMENT,
+    id_petugas INT,
+    tanggal DATE,
+    total_telur INT,
+    FOREIGN KEY (id_petugas) REFERENCES petugas(id_petugas)
+    );"
+    $detail_produksi_telur = "CREATE TABLE detail_produksi_telur (
+    id_detail_produksi INT PRIMARY KEY AUTO_INCREMENT,
+    id_produksi INT,
+    jumlah_telur_baik INT,
+    jumlah_telur_rusak INT,
+    jumlah_telur_busuk INT,
+    FOREIGN KEY (id_produksi) REFERENCES produksi_telur(id_produksi)
+    );"
