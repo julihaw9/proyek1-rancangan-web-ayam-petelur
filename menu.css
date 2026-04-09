@@ -166,6 +166,7 @@ thead{
     border-radius:20px;
     cursor:pointer;
     margin-right: 20px;
+    margin-top: 10px;
 }
 
 .btn-tambah:hover{
@@ -287,4 +288,69 @@ thead{
     padding:4px 10px;
     border-radius:6px;
     font-size:12px;
+}
+/* menu pengaturan */
+.form-group {
+    margin-bottom: 28px;
+}
+
+label {
+    display: block;
+    font-size: 16px;    
+    font-weight: 600;
+    color: #111111;
+    margin-bottom: 12px;
+    margin-top: 12px;
+}
+
+input {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 18px;
+    font-weight: 500;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 12px;
+    color: #111111;
+    outline: none;
+    transition: all 0.2s ease;
+    background-color: #fff;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 16px 18px; 
+    font-size: 18px;    
+    font-weight: 500;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 10px;
+    color: #111111;
+    outline: none;
+    transition: all 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #EF892A;
+    box-shadow: 0 0 0 4px rgba(239, 137, 42, 0.1);
+}
+    
+input::placeholder {
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+input:focus {
+    border-color: #EF892A;
+    box-shadow: 0 0 0 4px rgba(239, 137, 42, 0.1);
+    background-color: #fffdfa;
+}
+simpan-button {
+    border: none;
 }
