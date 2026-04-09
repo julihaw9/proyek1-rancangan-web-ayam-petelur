@@ -167,6 +167,7 @@ thead{
     cursor:pointer;
     margin-right: 20px;
     margin-top: 10px;
+    width: 95%;
 }
 
 .btn-tambah:hover{
