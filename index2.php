@@ -1,3 +1,16 @@
+<?php
+include 'connection.php';
+date_default_timezone_set('Asia/Jakarta');
+
+if(sesion_status() == PHP_SESSION_NONE){
+	session_start();
+}
+
+if($_SESSION['status'] == 'login'){
+	header('location:dashboard.php');
+}
+
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -12,7 +25,7 @@
 	<div class="login-container">
 		<h2>LOGIN</h2>
 
-		<form class="form-group" action="dashboard.html">
+		<form class="form-group" action="dashboard.html" method="POST">
 
 			<label for="email">Email</label>
 			<div class="input-wrapper">
