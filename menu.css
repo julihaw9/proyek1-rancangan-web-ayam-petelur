@@ -167,7 +167,6 @@ thead{
     cursor:pointer;
     margin-right: 20px;
     margin-top: 10px;
-    width: 95%;
 }
 
 .btn-tambah:hover{
@@ -305,7 +304,7 @@ label {
 }
 
 input {
-    width: 100%;
+    width: 95%;
     padding: 16px 20px;
     font-size: 18px;
     font-weight: 500;
@@ -315,12 +314,14 @@ input {
     outline: none;
     transition: all 0.2s ease;
     background-color: #fff;
+
 }
 
 .input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
+    width: 95%;
 }
 
 input[type="text"],
