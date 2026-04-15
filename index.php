@@ -1,5 +1,5 @@
 <?php
-session_start(); // WAJIB
+session_start();
 include ("koneksi.php");
 
 if (isset($_POST['login'])) {
@@ -9,14 +9,15 @@ if (isset($_POST['login'])) {
     $query = mysqli_query($conn, "SELECT * FROM petugas WHERE email='$email'");
     $data = mysqli_fetch_assoc($query);
 
-    // cek apakah data ada
+   
     if ($data) {
 
         if ($password == $data['password']) {
 
             $_SESSION['login'] = true;
             $_SESSION['nama'] = $data['nama_petugas'];
-
+			
+	
             header("Location: dashboard.php");
             exit;
 

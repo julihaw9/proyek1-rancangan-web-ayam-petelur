@@ -62,7 +62,7 @@ $total_telur = $data_telur['total'] ?? 0;
 
     <div class="card">
         <p>Total ayam</p>
-        <h2 class="card-number"><?= $total_ayam ?></h2>
+        <h2 class="card-number"><?php echo $data_ayam['total']; ?></h2>
         <span>Ekor ayam</span>
     </div>
 
