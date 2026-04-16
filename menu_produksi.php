@@ -72,7 +72,7 @@ $query_riwayat = mysqli_query($conn, "
                 <div class="card">
                     <p>Total Produksi</p>
                     <h2><?php echo $data_telur['total']; ?></h2>
-                    <span>butir telur</span>
+                    <span>Kg</span>
                 </div>
 
                 <div class="card">
