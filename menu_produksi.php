@@ -12,6 +12,20 @@ $data_telur_baik = mysqli_fetch_assoc($query_telur_baik);
 $query_telur_rusak = mysqli_query($conn, "SELECT SUM(jumlah_telur_rusak) as total FROM `detail_produksi_telur`");
 $data_telur_rusak = mysqli_fetch_assoc($query_telur_rusak);
 
+$query_riwayat = mysqli_query($conn, "
+    SELECT 
+        pt.id_produksi,
+        pt.tanggal,
+        pt.total_telur,
+        SUM(dpt.jumlah_telur_baik) as total_baik,
+        SUM(dpt.jumlah_telur_rusak) as total_rusak
+    FROM produksi_telur pt
+    JOIN detail_produksi_telur dpt 
+        ON pt.id_produksi = dpt.id_produksi
+    GROUP BY pt.id_produksi
+    ORDER BY pt.tanggal DESC
+
+");
 ?>
 
 <!DOCTYPE html>
@@ -82,39 +96,38 @@ $data_telur_rusak = mysqli_fetch_assoc($query_telur_rusak);
                     <thead>
                         <tr>
                             <th>Tanggal</th>
-                            <th>Kandang</th>
                             <th>Total Telur</th>
                             <th>Total Baik</th>
                             <th>Total Rusak</th>
-                            <th>Total Busuk</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
-
                     <tbody>
 
-                        <tr>
-                            <td>24 Februari 2026</td>
-                            <td>Kandang A</td>
-                            <td>1,260</td>
-                            <td class="hijau">1,220</td>
-                            <td class="merah">30</td>
-                            <td class="merah">10</td>
-                            <td>🗑</td>
-                        </tr>
+                        <?php while ($row = mysqli_fetch_assoc($query_riwayat)) { ?>
 
-                        <tr>
-                            <td>24 Februari 2026</td>
-                            <td>Kandang B</td>
-                            <td>1,480</td>
-                            <td class="hijau">1,430</td>
-                            <td class="merah">40</td>
-                            <td class="merah">10</td>
-                            <td>🗑</td>
-                        </tr>
+                            <tr>
+                                <td>
+                                    <?php echo date('d F Y', strtotime($row['tanggal'])); ?>
+                                </td>
+                                <td>
+                                    <?php echo number_format($row['total_telur']); ?>
+                                </td>
+                                <td class="hijau">
+                                    <?php echo number_format($row['total_baik']); ?>
+                                </td>
+                                <td class="merah">
+                                    <?php echo number_format($row['total_rusak']); ?>
+                                </td>
+                                <td>
+                                    <a href="hapus_produksi.php?id=<?php echo $row['id_produksi']; ?>"
+                                        onclick="return confirm('Yakin ingin menghapus?')">🗑</a>
+                                </td>
+                            </tr>
+
+                        <?php } ?>
 
                     </tbody>
-
                 </table>
 
             </div>
