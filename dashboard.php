@@ -1,3 +1,12 @@
+<?php
+include 'connection.php';
+date_default_timezone_set('Asia/Jakarta');
+
+if(sesion_status() == PHP_SESSION_NONE){
+	session_start();
+}
+
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
