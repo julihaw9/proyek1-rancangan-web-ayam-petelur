@@ -7,14 +7,12 @@ if (isset($_POST['simpan'])) {
     $total_uang = $_POST['jumlah'];
     $id_petugas = 1235; 
 
-    // Langkah 1: Input ke tabel transaksi
     $query_transaksi = "INSERT INTO transaksi (id_petugas, tanggal_transaksi, jenis_transaksi) 
                         VALUES ('$id_petugas', '$tanggal', 'pengeluaran')";
     
     if (mysqli_query($conn, $query_transaksi)) {
         $id_transaksi_baru = mysqli_insert_id($conn);
 
-        // Langkah 2: Input ke tabel pengeluaran
         $query_pengeluaran = "INSERT INTO pengeluaran (id_transaksi, keterangan, total_uang) 
                               VALUES ('$id_transaksi_baru', '$keterangan', '$total_uang')";
         
