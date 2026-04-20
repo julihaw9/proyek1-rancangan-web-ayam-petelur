@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("koneksi.php");
+include("tanggal.php");
 
 
 $query_telur = mysqli_query($conn, "SELECT SUM(total_telur) as total FROM `produksi_telur`");
@@ -14,18 +15,20 @@ $data_telur_rusak = mysqli_fetch_assoc($query_telur_rusak);
 
 $query_riwayat = mysqli_query($conn, "
     SELECT 
-        pt.id_produksi,
-        pt.tanggal,
-        pt.total_telur,
-        SUM(dpt.jumlah_telur_baik) as total_baik,
-        SUM(dpt.jumlah_telur_rusak) as total_rusak
-    FROM produksi_telur pt
-    JOIN detail_produksi_telur dpt 
-        ON pt.id_produksi = dpt.id_produksi
-    GROUP BY pt.id_produksi
-    ORDER BY pt.tanggal DESC
+    pt.id_produksi,
+    pt.tanggal,
+    pt.total_telur,
+    COALESCE(SUM(dpt.jumlah_telur_baik), 0) as total_baik,
+    COALESCE(SUM(dpt.jumlah_telur_rusak), 0) as total_rusak
+FROM produksi_telur pt
+LEFT JOIN detail_produksi_telur dpt 
+    ON pt.id_produksi = dpt.id_produksi
+GROUP BY pt.id_produksi
+ORDER BY pt.tanggal DESC;
 
 ");
+
+
 ?>
 
 <!DOCTYPE html>
@@ -42,24 +45,8 @@ $query_riwayat = mysqli_query($conn, "
 
     <div class="container">
 
-        <aside>
-            <h3>Prima Farm</h3>
-            <hr>
-
-            <nav>
-                <ul>
-                    <li><a href="dashboard.php">Dashboard</a></li>
-                    <li><a href="menu_inventori.php" class="active">Inventori</a></li>
-                    <li><a href="menu_produksi.php">Produksi</a></li>
-                    <li><a href="menu_transaksi.php">Transaksi Keuangan</a></li>
-                    <li><a href="menu_jadwalvaksinasi.php">Jadwal Vaksinasi</a></li>
-                    <li><a href="pengaturan.php">Pengaturan</a></li>
-                </ul>
-            </nav>
-
-            <a href="logout.php" class="logout-button">Logout</a>
-        </aside>
-
+        <?php $active = 'produksi'; ?>
+        <?php include("sidebar.php"); ?>
         <main>
 
             <h1>Produksi Telur</h1>
@@ -108,7 +95,7 @@ $query_riwayat = mysqli_query($conn, "
 
                             <tr>
                                 <td>
-                                    <?php echo date('d F Y', strtotime($row['tanggal'])); ?>
+                                    <?php echo tanggal_indo($row['tanggal']); ?>
                                 </td>
                                 <td>
                                     <?php echo number_format($row['total_telur']); ?>
