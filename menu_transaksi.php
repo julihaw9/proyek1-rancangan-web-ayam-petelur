@@ -1,120 +1,193 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "peternakan_ayam";
+session_start();
+include("koneksi.php");
+include("tanggal.php");
 
-$conn = mysqli_connect($host, $user, $pass, $db);
-
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+// proteksi login
+if (!isset($_SESSION['login'])) {
+    header("Location: index.php");
+    exit;
 }
 
-// 1. Ambil Total Pemasukan
-$query_pemasukan = mysqli_query($conn, "SELECT SUM(total_harga) as total FROM transaksi WHERE jenis='Pemasukan'");
-$row_pemasukan = mysqli_fetch_assoc($query_pemasukan);
-$total_pemasukan = $row_pemasukan['total'] ?? 0;
+//
+// ✅ TOTAL PEMASUKAN
+//
+$query_pemasukan = mysqli_query($conn, "
+    SELECT 
+        (SELECT COALESCE(SUM(total_uang),0) FROM pemasukan_ayam) +
+        (SELECT COALESCE(SUM(total_uang),0) FROM pemasukan_telur)
+    AS total
+");
+$data_pemasukan = mysqli_fetch_assoc($query_pemasukan);
+$total_pemasukan = $data_pemasukan['total'];
 
-// 2. Ambil Total Pengeluaran
-$query_pengeluaran = mysqli_query($conn, "SELECT SUM(total_harga) as total FROM transaksi WHERE jenis='Pengeluaran'");
-$row_pengeluaran = mysqli_fetch_assoc($query_pengeluaran);
-$total_pengeluaran = $row_pengeluaran['total'] ?? 0;
+//
+// ✅ TOTAL PENGELUARAN
+//
+$query_pengeluaran = mysqli_query($conn, "
+    SELECT COALESCE(SUM(total_uang),0) AS total FROM pengeluaran
+");
+$data_pengeluaran = mysqli_fetch_assoc($query_pengeluaran);
+$total_pengeluaran = $data_pengeluaran['total'];
 
-// 3. Hitung Profit
+//
+// ✅ RIWAYAT TRANSAKSI (UNION + SUMBER)
+//
+$query_transaksi = mysqli_query($conn, "
+    SELECT 
+        t.tanggal_transaksi,
+        pa.jumlah_ayam AS jumlah,
+        pa.total_uang,
+        'Pemasukan' AS jenis,
+        'Ayam' AS sumber,
+        pa.keterangan,
+        t.id_transaksi
+    FROM pemasukan_ayam pa
+    JOIN transaksi t ON pa.id_transaksi = t.id_transaksi
+
+    UNION ALL
+
+    SELECT 
+        t.tanggal_transaksi,
+        pt.jumlah_telur AS jumlah,
+        pt.total_uang,
+        'Pemasukan' AS jenis,
+        'Telur' AS sumber,
+        pt.keterangan,
+        t.id_transaksi
+    FROM pemasukan_telur pt
+    JOIN transaksi t ON pt.id_transaksi = t.id_transaksi
+
+    UNION ALL
+
+    SELECT 
+        t.tanggal_transaksi,
+        '-' AS jumlah,
+        p.total_uang,
+        'Pengeluaran' AS jenis,
+        '-' AS sumber,
+        p.keterangan,
+        t.id_transaksi
+    FROM pengeluaran p
+    JOIN transaksi t ON p.id_transaksi = t.id_transaksi
+
+    ORDER BY tanggal_transaksi DESC
+    LIMIT 5
+");
+
 $profit = $total_pemasukan - $total_pengeluaran;
-
-// 4. Ambil Riwayat Transaksi (Limit 5 untuk Dashboard)
-$query_transaksi = mysqli_query($conn, "SELECT * FROM transaksi ORDER BY tanggal_transaksi DESC LIMIT 5");
-
-
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisis Keuangan - Prima Farm</title>
+    <title>Analisis Keuangan</title>
     <link rel="stylesheet" href="menu.css">
 </head>
+
 <body>
 
-<div class="container">
-    <aside>
-        <h3>Prima Farm</h3>
-        <hr>
-        <nav>
-            <ul>
-                <li><a href="dashboard.php">Dashboard</a></li>
-                <li><a href="menu_inventori.php">Inventori</a></li>
-                <li><a href="menu_produksi.php">Produksi</a></li>
-                <li><a href="menu_transaksikeuangan.php" class="active">Transaksi Keuangan</a></li>
-                <li><a href="menu_jadwalvaksinasi.php">Jadwal Vaksinasi</a></li>
-                <li><a href="pengaturan.php">Pengaturan</a></li>
-            </ul>
-        </nav>
-        <a href="index.html" class="logout-button">Logout</a>
-    </aside>
+    <div class="container">
 
-    <main>
-        <h1>Analisis Keuangan</h1>
-        <p>Catat transaksi dan pantau profit</p>
+        <?php $active = 'transaksi'; ?>
+        <?php include("sidebar.php"); ?>
 
-        <div class="btn-group">
-            <a href="revisicatatanpenjualan.html" class="btn-hijau">+ Tambah Data Penjualan</a>
-            <a href="catatpengeluaran.html" class="btn-merah">+ Tambah Data Pengeluaran</a>
-        </div>
+        <main>
 
-        <div class="card-container">
-            <div class="card">
-                <p>Total Profit</p>
-                <h2 style="color: <?= $profit >= 0 ? '#2ecc71' : '#e74c3c' ?>;">
-                    Rp <?= number_format($profit, 0, ',', '.') ?>
-                </h2>
+            <h1>Analisis Keuangan</h1>
+            <p>Catat transaksi dan pantau profit</p>
+
+            <div class="btn-group">
+                <a href="revisicatatanpenjualan.html" class="btn-hijau">+ Tambah Data Penjualan</a>
+                <a href="catatpengeluaran.html" class="btn-merah">+ Tambah Data Pengeluaran</a>
             </div>
-            <div class="card">
-                <p>Total Pendapatan</p>
-                <h2>Rp <?= number_format($total_pemasukan, 0, ',', '.') ?></h2>
-            </div>
-            <div class="card">
-                <p>Total Biaya</p>
-                <h2>Rp <?= number_format($total_pengeluaran, 0, ',', '.') ?></h2>
-            </div>
-        </div>
 
-        <div class="table-box">
-            <h3>Riwayat Transaksi Terakhir</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tanggal</th>
-                        <th>Jumlah</th>
-                        <th>Total Uang</th>
-                        <th>Jenis</th>
-                        <th>Keterangan</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while($row = mysqli_fetch_assoc($query_transaksi)): ?>
-                    <tr>
-                        <td><?= date('d F Y', strtotime($row['tanggal_transaksi'])) ?></td>
-                        <td><?= $row['jumlah'] ?></td>
-                        <td>Rp <?= number_format($row['total_harga'], 0, ',', '.') ?></td>
-                        <td class="<?= strtolower($row['jenis']) == 'pemasukan' ? 'hijau' : 'merah' ?>">
-                            <?= $row['jenis'] ?>
-                        </td>
-                        <td><?= $row['keterangan'] ?></td>
-                        <td>
-                            <a href="hapus_transaksi.php?id=<?= $row['id_transaksi'] ?>" onclick="return confirm('Yakin hapus?')">🗑</a>
-                        </td>
-                    </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
-    </main>
-</div>
+            <!-- CARD -->
+            <div class="card-container">
+
+                <div class="card">
+                    <p>Total Profit</p>
+                    <h2 style="color: <?= $profit >= 0 ? '#2ecc71' : '#e74c3c' ?>;">
+                        Rp <?= number_format($profit, 0, ',', '.') ?>
+                    </h2>
+                </div>
+
+                <div class="card">
+                    <p>Total Pendapatan</p>
+                    <h2>Rp <?= number_format($total_pemasukan, 0, ',', '.') ?></h2>
+                </div>
+
+                <div class="card">
+                    <p>Total Biaya</p>
+                    <h2>Rp <?= number_format($total_pengeluaran, 0, ',', '.') ?></h2>
+                </div>
+
+            </div>
+
+            <!-- TABEL -->
+            <div class="table-box">
+
+                <h3>Riwayat Transaksi Terakhir</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Jumlah</th>
+                            <th>Total Uang</th>
+                            <th>Jenis</th>
+                            <th>Sumber</th>
+                            <th>Keterangan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <?php if (mysqli_num_rows($query_transaksi) > 0): ?>
+                            <?php while ($row = mysqli_fetch_assoc($query_transaksi)): ?>
+                                <tr>
+
+                                    <td><?= tanggal_indo($row['tanggal_transaksi']); ?></td>
+
+                                    <td>
+                                        <?= is_numeric($row['jumlah']) ? $row['jumlah'] : '-' ?>
+                                    </td>
+
+                                    <td>Rp <?= number_format($row['total_uang'], 0, ',', '.') ?></td>
+
+                                    <td class="<?= ($row['jenis'] == 'Pemasukan') ? 'hijau' : 'merah' ?>">
+                                        <?= $row['jenis'] ?>
+                                    </td>
+
+                                    <td><?= $row['sumber'] ?></td>
+
+                                    <td><?= htmlspecialchars($row['keterangan']); ?></td>
+
+                                    <td>
+                                        <a href="hapus.php?id=<?= $row['id_transaksi'] ?>&jenis=transaksi&sumber=<?= $row['sumber'] ?>"
+                                            onclick="return confirm('Yakin hapus?')">🗑</a>
+                                    </td>
+
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7">Belum ada transaksi</td>
+                            </tr>
+                        <?php endif; ?>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
 
 </body>
+
 </html>

@@ -18,8 +18,8 @@ body {
 .login-container {
     background-color: #ffffff;
     border-radius: 16px; 
-    padding: 48px;      
-    width: 550px;       
+    padding: 48px; 
+    width: 550px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 

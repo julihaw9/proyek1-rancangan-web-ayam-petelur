@@ -45,23 +45,8 @@ if (!$query_riwayat) {
 
     <div class="container">
 
-        <aside>
-            <h3>Prima Farm</h3>
-            <hr>
-
-            <nav>
-                <ul>
-                    <li><a href="dashboard.php">Dashboard</a></li>
-                    <li><a href="menu_inventori.php" class="active">Inventori</a></li>
-                    <li><a href="menu_produksi.php">Produksi</a></li>
-                    <li><a href="menu_transaksi.php">Transaksi Keuangan</a></li>
-                    <li><a href="menu_jadwalvaksinasi.php">Jadwal Vaksinasi</a></li>
-                    <li><a href="pengaturan.php">Pengaturan</a></li>
-                </ul>
-            </nav>
-
-            <a href="logout.php" class="logout-button">Logout</a>
-        </aside>
+        <?php $active = 'inventori'; ?>
+        <?php include("sidebar.php"); ?>
 
         <main>
 
