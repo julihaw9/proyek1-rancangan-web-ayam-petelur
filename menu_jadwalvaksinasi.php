@@ -1,24 +1,57 @@
 <?php
-$conn = mysqli_connect("localhost", "root", "", "peternakan_ayam");
+session_start();
+include("koneksi.php");
 
-if (!$conn) {
-    die("Koneksi ke database gagal: " . mysqli_connect_error());
+// Proteksi login
+if (!isset($_SESSION['login'])) {
+    header("Location: index.php");
+    exit;
 }
 
-if (isset($_GET['hapus'])) {
-    $id = $_GET['hapus'];
-    mysqli_query($conn, "DELETE FROM status_vaksinasi WHERE id_jadwal_vaksinasi = $id");
-    mysqli_query($conn, "DELETE FROM jadwal_vaksinasi WHERE id_jadwal_vaksinasi = $id");
-    header("Location: menu_jadwalvaksinasi.php");
-    exit();
-}
+// 🔹 Query dengan LEFT JOIN untuk mengambil status dari tabel status_vaksinasi
+// j = jadwal_vaksinasi, s = status_vaksinasi
+$query_sql = "
+    SELECT 
+        j.id_jadwal_vaksinasi, 
+        j.id_petugas, 
+        j.id_blok_kandang, 
+        j.jadwal_vaksinasi, 
+        s.status_vaksinasi 
+    FROM jadwal_vaksinasi j
+    LEFT JOIN status_vaksinasi s ON j.id_jadwal_vaksinasi = s.id_jadwal_vaksinasi
+    ORDER BY j.jadwal_vaksinasi ASC
+";
 
-if (isset($_GET['selesai'])) {
-    $id = $_GET['selesai'];
-    $tgl_hari_ini = date('Y-m-d');
-    mysqli_query($conn, "UPDATE status_vaksinasi SET status_vaksinasi='Selesai', tanggal_vaksinasi='$tgl_hari_ini' WHERE id_jadwal_vaksinasi = $id");
-    header("Location: menu_jadwalvaksinasi.php");
-    exit();
+$result = mysqli_query($conn, $query_sql);
+
+// 🔹 Hitung statistik
+$today = date('Y-m-d');
+$jadwal_mendatang = 0;
+$selesai = 0;
+$perlu_perhatian = 0;
+$data_jadwal = [];
+
+if ($result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $tgl_vaksin = $row['jadwal_vaksinasi'];
+        $status = $row['status_vaksinasi'];
+        
+        // Hitung selisih hari
+        $diff = strtotime($tgl_vaksin) - strtotime($today);
+        $selisih = floor($diff / 86400);
+
+        // Pengelompokan Logika
+        if ($status == 'selesai') {
+            $selesai++;
+        } elseif ($selisih < 0) {
+            $perlu_perhatian++;
+        } else {
+            $jadwal_mendatang++;
+        }
+
+        $row['selisih'] = $selisih;
+        $data_jadwal[] = $row;
+    }
 }
 ?>
 
@@ -26,75 +59,71 @@ if (isset($_GET['selesai'])) {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Jadwal Vaksinasi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Vaksinasi Ayam</title>
     <link rel="stylesheet" href="menu.css">
+    <style>
+        /* Tambahan style singkat agar tampilan rapi */
+        .warning-box { background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffeeba; }
+        .warning-card { background: white; padding: 10px; margin-top: 10px; border-left: 5px solid #ffc107; border-radius: 4px; }
+        .card-container { display: flex; gap: 20px; }
+        .card { flex: 1; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .merah { color: red; }
+        .hijau { color: green; }
+        .btn-hijau { background: #28a745; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 12px; }
+    </style>
 </head>
 <body>
+
 <div class="container">
-    <aside>
-        <h3>Prima Farm</h3>
-        <hr>
-        <nav>
-            <ul>
-                <li><a href="dashboard.php">Dashboard</a></li>
-                <li><a href="menu_inventori.php">Inventori</a></li>
-                <li><a href="menu_produksi.php">Produksi</a></li>
-                <li><a href="menu_transaksikeuangan.php">Transaksi Keuangan</a></li>
-                <li><a href="menu_jadwalvaksinasi.php" class="active">Jadwal Vaksinasi</a></li>
-                <li><a href="pengaturan.php">Pengaturan</a></li>
-            </ul>
-        </nav>
-        <a href="index.php" class="logout-button">Logout</a>
-    </aside>
+    <?php $active = 'jadwal'; ?>
+    <?php include("sidebar.php"); ?>
 
     <main>
         <h1>Jadwal Vaksinasi</h1>
-        <p>Pengingat dan manajemen jadwal vaksin ayam</p>
-        <a href="tambah_jadwal.php" class="btn-tambah">+ Tambah Jadwal</a>
+        <p>Manajemen jadwal dan pengingat vaksinasi peternakan</p>
+
+        <a href="jadwalvaksinasi.php" class="btn-tambah" style="display:inline-block; margin-bottom:20px; padding:10px; background:#007bff; color:white; text-decoration:none; border-radius:5px;">+ Tambah Jadwal</a>
 
         <div class="warning-box">
-            <h3>Daftar Pengingat</h3>
-            <?php
-            $sql = "SELECT j.id_jadwal_vaksinasi, j.id_blok_kandang, j.jadwal_vaksinasi, s.status_vaksinasi 
-                    FROM jadwal_vaksinasi j
-                    LEFT JOIN status_vaksinasi s ON j.id_jadwal_vaksinasi = s.id_jadwal_vaksinasi
-                    ORDER BY j.jadwal_vaksinasi ASC";
-            
-            $query = mysqli_query($conn, $sql);
-            
-            if (mysqli_num_rows($query) > 0) {
-                while ($row = mysqli_fetch_assoc($query)) {
-                    $tgl_tujuan = new DateTime($row['jadwal_vaksinasi']);
-                    $tgl_skrg = new DateTime();
-                    $diff = $tgl_skrg->diff($tgl_tujuan);
-                    $sisa = $diff->format("%r%a");
+            <h3>Pengingat Vaksinasi Mendesak!</h3>
+            <?php 
+            $ada_peringatan = false;
+            foreach ($data_jadwal as $j): 
+                if ($j['selisih'] >= 0 && $j['selisih'] <= 2 && $j['status_vaksinasi'] != 'selesai'): 
+                    $ada_peringatan = true;
             ?>
                 <div class="warning-card">
-                    <span class="hari">
-                        <?php 
-                            if ($row['status_vaksinasi'] == 'Selesai') echo "SELESAI";
-                            else if ($sisa < 0) echo "TERLAMBAT";
-                            else echo $sisa . " HARI LAGI";
-                        ?>
-                    </span>
-                    <p><strong>Blok: <?= htmlspecialchars($row['id_blok_kandang']) ?></strong></p>
-                    <p><?= date('d F Y', strtotime($row['jadwal_vaksinasi'])) ?></p>
-                    
-                    <div style="margin-top:10px;">
-                        <?php if($row['status_vaksinasi'] != 'Selesai'): ?>
-                            <button class="btn-hijau" onclick="location.href='?selesai=<?= $row['id_jadwal_vaksinasi'] ?>'">Tandai Selesai</button>
-                        <?php endif; ?>
-                        <button onclick="if(confirm('Hapus?')) location.href='?hapus=<?= $row['id_jadwal_vaksinasi'] ?>'" style="background:none; border:none; color:red; cursor:pointer; font-size:12px; margin-left:10px;">Hapus</button>
-                    </div>
+                    <strong style="color: #856404;">
+                        <?= ($j['selisih'] == 0) ? "HARI INI" : $j['selisih'] . " HARI LAGI"; ?>
+                    </strong>
+                    <p>Blok Kandang: <?= $j['id_blok_kandang']; ?> | Tanggal: <?= date('d M Y', strtotime($j['jadwal_vaksinasi'])); ?></p>
+                    <a href="proses_selesai.php?id=<?= $j['id_jadwal_vaksinasi']; ?>&tgl=<?= $j['jadwal_vaksinasi']; ?>" class="btn-hijau">Tandai Selesai</a>
                 </div>
             <?php 
-                }
-            } else {
-                echo "<p style='padding:20px; color:gray;'>Belum ada data di database.</p>";
-            }
+                endif; 
+            endforeach; 
+
+            if (!$ada_peringatan) echo "<p>Tidak ada jadwal mendesak saat ini.</p>";
             ?>
+        </div>
+
+        <div class="card-container">
+            <div class="card">
+                <p>Jadwal Mendatang</p>
+                <h2><?= $jadwal_mendatang ?></h2>
+            </div>
+            <div class="card">
+                <p>Selesai</p>
+                <h2 class="hijau"><?= $selesai ?></h2>
+            </div>
+            <div class="card">
+                <p>Perlu Perhatian (Terlewat)</p>
+                <h2 class="merah"><?= $perlu_perhatian ?></h2>
+            </div>
         </div>
     </main>
 </div>
+
 </body>
 </html>

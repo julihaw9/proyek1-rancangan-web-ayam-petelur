@@ -1,27 +1,30 @@
 <?php
-$conn = mysqli_connect("localhost", "root", "", "peternakan_ayam");
+session_start();
+include("koneksi.php");
+
+// Proteksi login
+if (!isset($_SESSION['login'])) {
+    header("Location: index.php");
+    exit;
+}
 
 if (isset($_POST['simpan'])) {
-    $tanggal = $_POST['tanggal'];
-    $kandang = $_POST['kandang'];
-    $id_petugas = 1; 
+    $id_petugas = mysqli_real_escape_string($conn, $_POST['id_petugas']);
+    $id_blok    = mysqli_real_escape_string($conn, $_POST['id_blok_kandang']);
+    $tanggal    = mysqli_real_escape_string($conn, $_POST['jadwal_vaksinasi']);
 
-    $query_jadwal = "INSERT INTO jadwal_vaksinasi (id_petugas, id_blok_kandang, jadwal_vaksinasi) 
-                     VALUES ('$id_petugas', '$kandang', '$tanggal')";
-    
-    if (mysqli_query($conn, $query_jadwal)) {
-        $last_id = mysqli_insert_id($conn);
+    // Gunakan 'id_blok_kandang' atau 'id_blok_kandnag' sesuai database kamu
+    $sql = "INSERT INTO jadwal_vaksinasi (id_petugas, id_blok_kandang, jadwal_vaksinasi) 
+            VALUES ('$id_petugas', '$id_blok', '$tanggal')";
 
-        $query_status = "INSERT INTO status_vaksinasi (id_jadwal_vaksinasi, tanggal_vaksinasi, status_vaksinasi) 
-                         VALUES ('$last_id', '$tanggal', 'Mendatang')";
-        
-        mysqli_query($conn, $query_status);
-
-        header("Location: menu_jadwalvaksinasi.php");
-        exit();
+    if (mysqli_query($conn, $sql)) {
+        echo "<script>alert('Data Berhasil Disimpan'); window.location='menu_jadwalvaksinasi.php';</script>";
+    } else {
+        echo "Error: " . mysqli_error($conn);
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -30,20 +33,40 @@ if (isset($_POST['simpan'])) {
     <link rel="stylesheet" href="form.css">
 </head>
 <body>
-    <form action="" method="POST"> 
+
+    <form action="" method="POST">
         <div class="modal-card">
             <h2>Tambah Jadwal Vaksinasi</h2>
 
             <div class="form-group">
-                <label for="tanggal">Tanggal Vaksinasi</label>
-                <input type="date" id="tanggal" name="tanggal" required>
+                <label>Petugas Pelaksana:</label>
+                <select name="id_petugas" required>
+                    <option value="">-- Pilih Petugas --</option>
+                    <?php
+                    $q_petugas = mysqli_query($conn, "SELECT * FROM petugas");
+                    while ($p = mysqli_fetch_assoc($q_petugas)) {
+                        echo "<option value='{$p['id_petugas']}'>{$p['nama_petugas']}</option>";
+                    }
+                    ?>
+                </select>
             </div>
 
             <div class="form-group">
-                <label for="kandang">ID Blok Kandang</label>
-                <div class="input-wrapper">
-                    <input type="text" id="kandang" name="kandang" placeholder="Contoh: BK01" required>
-                </div>
+                <label>Blok Kandang:</label>
+                <select name="id_blok_kandang" required>
+                    <option value="">-- Pilih Blok --</option>
+                    <?php
+                    $q_blok = mysqli_query($conn, "SELECT * FROM blok_kandang");
+                    while ($b = mysqli_fetch_assoc($q_blok)) {
+                        echo "<option value='{$b['id_blok_kandang']}'>Blok {$b['id_blok_kandang']}</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tanggal Vaksinasi:</label>
+                <input type="date" name="jadwal_vaksinasi" required>
             </div>
 
             <div class="action-buttons">
@@ -52,5 +75,6 @@ if (isset($_POST['simpan'])) {
             </div>
         </div>
     </form>
+
 </body>
 </html>

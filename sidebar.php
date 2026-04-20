@@ -10,10 +10,10 @@
             <li><a href="menu_inventori.php" class="<?= ($active == 'inventori') ? 'active' : '' ?>">Inventori</a></li>
             <li><a href="menu_produksi.php" class="<?= ($active == 'produksi') ? 'active' : '' ?>">Produksi</a></li>
             <li><a href="menu_transaksi.php" class="<?= ($active == 'transaksi') ? 'active' : '' ?>">Transaksi Keuangan</a></li>
-            <li><a href="menu_jadwalvaksinasi.php" class="<?= ($active == 'vaksin') ? 'active' : '' ?>">Jadwal Vaksinasi</a></li>
+            <li><a href="menu_jadwalvaksinasi.php" class="<?= ($active == 'jadwal') ? 'active' : '' ?>">Jadwal Vaksinasi</a></li>
             <li><a href="pengaturan.php" class="<?= ($active == 'pengaturan') ? 'active' : '' ?>">Pengaturan</a></li>
         </ul>
     </nav>
 
-    <a href="logout.php" class="logout-button">Logout</a>
+    <a href="index.php" class="logout-button" onclick="">Logout</a>
 </aside>
