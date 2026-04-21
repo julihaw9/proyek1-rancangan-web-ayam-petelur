@@ -9,13 +9,15 @@ if (!isset($_SESSION['login'])) {
 }
 
 if (isset($_POST['simpan'])) {
-    $id_petugas = mysqli_real_escape_string($conn, $_POST['id_petugas']);
+    // Sanitasi input agar aman dari SQL Injection
     $id_blok    = mysqli_real_escape_string($conn, $_POST['id_blok_kandang']);
     $tanggal    = mysqli_real_escape_string($conn, $_POST['jadwal_vaksinasi']);
+    $keterangan = mysqli_real_escape_string($conn, $_POST['keterangan']);
 
-    // Gunakan 'id_blok_kandang' atau 'id_blok_kandnag' sesuai database kamu
-    $sql = "INSERT INTO jadwal_vaksinasi (id_petugas, id_blok_kandang, jadwal_vaksinasi) 
-            VALUES ('$id_petugas', '$id_blok', '$tanggal')";
+    // INSERT disesuaikan dengan kolom di database: id_blok_kandang, jadwal, status, keterangan
+    // Status diset 0 (Belum Selesai) secara default
+    $sql = "INSERT INTO jadwal_vaksinasi (id_blok_kandang, jadwal, status, keterangan) 
+            VALUES ('$id_blok', '$tanggal', 0, '$keterangan')";
 
     if (mysqli_query($conn, $sql)) {
         echo "<script>alert('Data Berhasil Disimpan'); window.location='menu_jadwalvaksinasi.php';</script>";
@@ -39,19 +41,6 @@ if (isset($_POST['simpan'])) {
             <h2>Tambah Jadwal Vaksinasi</h2>
 
             <div class="form-group">
-                <label>Petugas Pelaksana:</label>
-                <select name="id_petugas" required>
-                    <option value="">-- Pilih Petugas --</option>
-                    <?php
-                    $q_petugas = mysqli_query($conn, "SELECT * FROM petugas");
-                    while ($p = mysqli_fetch_assoc($q_petugas)) {
-                        echo "<option value='{$p['id_petugas']}'>{$p['nama_petugas']}</option>";
-                    }
-                    ?>
-                </select>
-            </div>
-
-            <div class="form-group">
                 <label>Blok Kandang:</label>
                 <select name="id_blok_kandang" required>
                     <option value="">-- Pilih Blok --</option>
@@ -67,6 +56,11 @@ if (isset($_POST['simpan'])) {
             <div class="form-group">
                 <label>Tanggal Vaksinasi:</label>
                 <input type="date" name="jadwal_vaksinasi" required>
+            </div>
+
+            <div class="form-group">
+                <label>Keterangan (Jenis Vaksin/Catatan):</label>
+                <input type="text" name="keterangan" placeholder="Contoh: Vaksin ND-IB Dosis 1" required>
             </div>
 
             <div class="action-buttons">

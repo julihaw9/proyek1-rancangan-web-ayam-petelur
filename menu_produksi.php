@@ -65,13 +65,13 @@ ORDER BY pt.tanggal DESC;
                 <div class="card">
                     <p>Telur Baik</p>
                     <h2 class="hijau"><?php echo $data_telur_baik['total']; ?></h2>
-                    <span>butir</span>
+                    <span>kg</span>
                 </div>
 
                 <div class="card merah">
                     <p>Telur Rusak</p>
                     <h2 class="merah"><?php echo $data_telur_rusak['total']; ?></h2>
-                    <span>butir</span>
+                    <span>kg</span>
                 </div>
             </div>
             <div class="table-box">
