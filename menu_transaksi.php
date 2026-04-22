@@ -3,44 +3,36 @@ session_start();
 include("koneksi.php");
 include("tanggal.php");
 
-// proteksi login
+// Pastikan charset koneksi seragam untuk menghindari error collation
+mysqli_set_charset($conn, "utf8mb4");
+
 if (!isset($_SESSION['login'])) {
     header("Location: index.php");
     exit;
 }
 
-//
-// ✅ TOTAL PEMASUKAN
-//
-$query_pemasukan = mysqli_query($conn, "
+// ✅ 1. AMBIL SUMMARY KEUANGAN
+$query_summary = mysqli_query($conn, "
     SELECT 
-        (SELECT COALESCE(SUM(total_uang),0) FROM pemasukan_ayam) +
-        (SELECT COALESCE(SUM(total_uang),0) FROM pemasukan_telur)
-    AS total
+        (SELECT COALESCE(SUM(total_uang), 0) FROM pemasukan_ayam) AS total_ayam,
+        (SELECT COALESCE(SUM(total_uang), 0) FROM pemasukan_telur) AS total_telur,
+        (SELECT COALESCE(SUM(total_uang), 0) FROM pengeluaran) AS total_pengeluaran
 ");
-$data_pemasukan = mysqli_fetch_assoc($query_pemasukan);
-$total_pemasukan = $data_pemasukan['total'];
+$res_sum = mysqli_fetch_assoc($query_summary);
 
-//
-// ✅ TOTAL PENGELUARAN
-//
-$query_pengeluaran = mysqli_query($conn, "
-    SELECT COALESCE(SUM(total_uang),0) AS total FROM pengeluaran
-");
-$data_pengeluaran = mysqli_fetch_assoc($query_pengeluaran);
-$total_pengeluaran = $data_pengeluaran['total'];
+$total_pemasukan = $res_sum['total_ayam'] + $res_sum['total_telur'];
+$total_pengeluaran = $res_sum['total_pengeluaran'];
+$profit = $total_pemasukan - $total_pengeluaran;
 
-//
-// ✅ RIWAYAT TRANSAKSI (UNION + SUMBER)
-//
+// ✅ 2. RIWAYAT TRANSAKSI (Dengan perbaikan COLLATE agar tidak error)
 $query_transaksi = mysqli_query($conn, "
     SELECT 
         t.tanggal_transaksi,
         pa.jumlah_ayam AS jumlah,
         pa.total_uang,
-        'Pemasukan' AS jenis,
-        'Ayam' AS sumber,
-        pa.keterangan,
+        CAST('Pemasukan' AS CHAR) COLLATE utf8mb4_general_ci AS jenis,
+        CAST('Ayam' AS CHAR) COLLATE utf8mb4_general_ci AS sumber,
+        pa.keterangan COLLATE utf8mb4_general_ci AS keterangan,
         t.id_transaksi
     FROM pemasukan_ayam pa
     JOIN transaksi t ON pa.id_transaksi = t.id_transaksi
@@ -51,9 +43,9 @@ $query_transaksi = mysqli_query($conn, "
         t.tanggal_transaksi,
         pt.jumlah_telur AS jumlah,
         pt.total_uang,
-        'Pemasukan' AS jenis,
-        'Telur' AS sumber,
-        pt.keterangan,
+        CAST('Pemasukan' AS CHAR) COLLATE utf8mb4_general_ci AS jenis,
+        CAST('Telur' AS CHAR) COLLATE utf8mb4_general_ci AS sumber,
+        pt.keterangan COLLATE utf8mb4_general_ci AS keterangan,
         t.id_transaksi
     FROM pemasukan_telur pt
     JOIN transaksi t ON pt.id_transaksi = t.id_transaksi
@@ -62,20 +54,18 @@ $query_transaksi = mysqli_query($conn, "
 
     SELECT 
         t.tanggal_transaksi,
-        '-' AS jumlah,
+        CAST('-' AS CHAR) COLLATE utf8mb4_general_ci AS jumlah,
         p.total_uang,
-        'Pengeluaran' AS jenis,
-        '-' AS sumber,
-        p.keterangan,
+        CAST('Pengeluaran' AS CHAR) COLLATE utf8mb4_general_ci AS jenis,
+        CAST('-' AS CHAR) COLLATE utf8mb4_general_ci AS sumber,
+        p.keterangan COLLATE utf8mb4_general_ci AS keterangan,
         t.id_transaksi
     FROM pengeluaran p
     JOIN transaksi t ON p.id_transaksi = t.id_transaksi
 
     ORDER BY tanggal_transaksi DESC
-    LIMIT 5
+    LIMIT 10
 ");
-
-$profit = $total_pemasukan - $total_pengeluaran;
 ?>
 
 <!DOCTYPE html>
@@ -83,6 +73,7 @@ $profit = $total_pemasukan - $total_pengeluaran;
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analisis Keuangan</title>
     <link rel="stylesheet" href="menu.css">
 </head>
@@ -91,29 +82,23 @@ $profit = $total_pemasukan - $total_pengeluaran;
 
     <div class="container">
 
-        <?php $active = 'transaksi'; ?>
-        <?php include("sidebar.php"); ?>
+        <?php $active = 'transaksi';
+        include("sidebar.php"); ?>
 
         <main>
-
-            <h1>Analisis Keuangan</h1>
-            <p>Catat transaksi dan pantau profit</p>
-
-            <div class="btn-group">
-                <a href="revisicatatanpenjualan.html" class="btn-hijau">+ Tambah Data Penjualan</a>
-                <a href="catatpengeluaran.html" class="btn-merah">+ Tambah Data Pengeluaran</a>
+            <div class="top-bar">
+                <h1>Analisis Keuangan</h1><br>
+                <input type="text" placeholder="Cari transaksi...">
             </div>
 
-            <!-- CARD -->
+            <p>Pantau arus kas masuk dan keluar secara real-time.</p>
+
+            <div class="btn-group">
+                <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Data Penjualan</a>
+                <a href="catatpengeluaran.php" class="btn-merah">+ Tambah Data Pengeluaran</a>
+            </div>
+
             <div class="card-container">
-
-                <div class="card">
-                    <p>Total Profit</p>
-                    <h2 style="color: <?= $profit >= 0 ? '#2ecc71' : '#e74c3c' ?>;">
-                        Rp <?= number_format($profit, 0, ',', '.') ?>
-                    </h2>
-                </div>
-
                 <div class="card">
                     <p>Total Pendapatan</p>
                     <h2>Rp <?= number_format($total_pemasukan, 0, ',', '.') ?></h2>
@@ -121,21 +106,24 @@ $profit = $total_pemasukan - $total_pengeluaran;
 
                 <div class="card">
                     <p>Total Biaya</p>
-                    <h2>Rp <?= number_format($total_pengeluaran, 0, ',', '.') ?></h2>
+                    <h2 class="merah">Rp <?= number_format($total_pengeluaran, 0, ',', '.') ?></h2>
                 </div>
 
+                <div class="card">
+                    <p>Total Profit</p>
+                    <h2 class="<?= $profit >= 0 ? 'hijau' : 'merah' ?>">
+                        Rp <?= number_format($profit, 0, ',', '.') ?>
+                    </h2>
+                </div>
             </div>
 
-            <!-- TABEL -->
             <div class="table-box">
-
                 <h3>Riwayat Transaksi Terakhir</h3>
-
                 <table>
                     <thead>
                         <tr>
                             <th>Tanggal</th>
-                            <th>Jumlah</th>
+                            <th>Jumlah (kg)</th>
                             <th>Total Uang</th>
                             <th>Jenis</th>
                             <th>Sumber</th>
@@ -143,20 +131,22 @@ $profit = $total_pemasukan - $total_pengeluaran;
                             <th>Aksi</th>
                         </tr>
                     </thead>
-
                     <tbody>
-
                         <?php if (mysqli_num_rows($query_transaksi) > 0): ?>
                             <?php while ($row = mysqli_fetch_assoc($query_transaksi)): ?>
                                 <tr>
-
                                     <td><?= tanggal_indo($row['tanggal_transaksi']); ?></td>
 
                                     <td>
-                                        <?= is_numeric($row['jumlah']) ? $row['jumlah'] : '-' ?>
+                                        <?php
+                                        $jumlah = $row['jumlah'] ?? 0; // Jika null, jadikan 0
+                                        echo is_numeric($jumlah) ? number_format((float) $jumlah, 0, ',', '.') : '-';
+                                        ?>
                                     </td>
 
-                                    <td>Rp <?= number_format($row['total_uang'], 0, ',', '.') ?></td>
+                                    <td>
+                                        <strong>Rp <?= number_format((float) ($row['total_uang'] ?? 0), 0, ',', '.') ?></strong>
+                                    </td>
 
                                     <td class="<?= ($row['jenis'] == 'Pemasukan') ? 'hijau' : 'merah' ?>">
                                         <?= $row['jenis'] ?>
@@ -164,28 +154,23 @@ $profit = $total_pemasukan - $total_pengeluaran;
 
                                     <td><?= $row['sumber'] ?></td>
 
-                                    <td><?= htmlspecialchars($row['keterangan']); ?></td>
+                                    <td><?= htmlspecialchars($row['keterangan'] ?? ''); ?></td>
 
                                     <td>
-                                        <a href="hapus.php?id=<?= $row['id_transaksi'] ?>&jenis=transaksi&sumber=<?= $row['sumber'] ?>"
-                                            onclick="return confirm('Yakin hapus?')">🗑</a>
+                                        <a href="hapus.php?id=<?= $row['id_transaksi'] ?>&sumber=<?= strtolower($row['sumber']) ?>"
+                                            onclick="return confirm('Yakin ingin menghapus data ini?')">🗑️</a>
                                     </td>
-
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7">Belum ada transaksi</td>
+                                <td colspan="7" style="text-align: center;">Belum ada data transaksi.</td>
                             </tr>
                         <?php endif; ?>
-
                     </tbody>
                 </table>
-
             </div>
-
         </main>
-
     </div>
 
 </body>
