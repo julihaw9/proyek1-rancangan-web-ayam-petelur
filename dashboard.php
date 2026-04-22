@@ -16,7 +16,7 @@ $q_telur = mysqli_query($conn, "SELECT SUM(total_telur) as total FROM produksi_t
 $d_telur = mysqli_fetch_assoc($q_telur);
 $total_telur = $d_telur['total'] ?? 0;
 
-// 2. Query Profit (Sederhana & Pasti Jalan)
+// 2. Query Profit (Sederhana & Pasti Jalan)kk
 // Kita ambil data 6 bulan terakhir
 $labels = [];
 $profits = [];
