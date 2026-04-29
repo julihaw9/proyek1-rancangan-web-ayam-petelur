@@ -2,6 +2,7 @@
 session_start();
 include ("koneksi.php");
 
+
 if (isset($_POST['login'])) {
 
     $email = $_POST['email'];
@@ -17,8 +18,9 @@ if (isset($_POST['login'])) {
             $_SESSION['login'] = true;
             $_SESSION['nama'] = $data['nama_petugas'];
 			
-	
+			
             header("Location: dashboard.php");
+			
             exit;
 
         } else {

@@ -9,29 +9,36 @@ if (!isset($_SESSION['login'])) {
 }
 
 if (isset($_POST['simpan'])) {
-    // 1. Ambil dan amankan input dari form
-    $tanggal = mysqli_real_escape_string($conn, $_POST['tanggal']);
-    $jumlah_telur = mysqli_real_escape_string($conn, $_POST['jumlah_telur']);
+    // 1. Ambil input dari form
+    $tanggal_input = mysqli_real_escape_string($conn, $_POST['tanggal']);
+    $jumlah_jual = mysqli_real_escape_string($conn, $_POST['jumlah_telur']);
     $keterangan = mysqli_real_escape_string($conn, $_POST['keterangan']);
-    $total_uang = mysqli_real_escape_string($conn, $_POST['total_uang']); // Mengambil input total uang manual
+    $total_uang = mysqli_real_escape_string($conn, $_POST['total_uang']);
 
-    // 2. ID Petugas (Ambil dari session atau gunakan default 1235 sesuai database kamu)
+    // 2. Ambil ID Produksi TERBARU secara otomatis dari database
+    // Ini dilakukan agar kita tidak perlu mengisi ID secara manual atau lewat dropdown
+    $query_cari_id = "SELECT id_produksi FROM produksi_telur ORDER BY id_produksi DESC LIMIT 1";
+    $result_id = mysqli_query($conn, $query_cari_id);
+    $data_produksi = mysqli_fetch_assoc($result_id);
+
+    if (!$data_produksi) {
+        echo "<script>alert('Gagal: Tidak ada data di tabel produksi_telur. Isi data produksi dulu!'); window.history.back();</script>";
+        exit;
+    }
+
+    $id_produksi_otomatis = $data_produksi['id_produksi'];
     $id_petugas = $_SESSION['id_petugas'] ?? 1235; 
 
-    // 3. INSERT ke tabel induk (transaksi)
+    // 3. Simpan ke tabel transaksi (induk)
     $query_transaksi = "INSERT INTO transaksi (id_petugas, tanggal_transaksi, jenis_transaksi) 
-                        VALUES ('$id_petugas', '$tanggal', 'Pemasukan')";
+                        VALUES ('$id_petugas', '$tanggal_input', 'Pemasukan')";
     
     if (mysqli_query($conn, $query_transaksi)) {
-        // Ambil ID Transaksi yang baru saja terbuat
         $id_transaksi_baru = mysqli_insert_id($conn);
 
-        // 4. INSERT ke tabel anak (pemasukan_telur)
-        // Gunakan ID produksi yang sudah pasti ada di database kamu (misal 1013)
-        $id_produksi_ref = 1013; 
-
+        // 4. Simpan ke tabel pemasukan_telur (anak) menggunakan ID Produksi otomatis
         $query_pemasukan = "INSERT INTO pemasukan_telur (id_transaksi, id_produksi, jumlah_telur, keterangan, total_uang) 
-                            VALUES ('$id_transaksi_baru', '$id_produksi_ref', '$jumlah_telur', '$keterangan', '$total_uang')";
+                            VALUES ('$id_transaksi_baru', '$id_produksi_otomatis', '$jumlah_jual', '$keterangan', '$total_uang')";
         
         if (mysqli_query($conn, $query_pemasukan)) {
             echo "<script>
@@ -64,14 +71,14 @@ if (isset($_POST['simpan'])) {
         <form action="" method="POST">
             
             <div class="form-group">
-                <label for="tanggal">Tanggal</label>
+                <label for="tanggal">Tanggal Transaksi</label>
                 <div class="input-wrapper">
                     <input type="date" id="tanggal" name="tanggal" required value="<?= date('Y-m-d') ?>">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="jumlah_telur">Jumlah Telur (kg)</label>
+                <label for="jumlah_telur">Jumlah Telur Terjual (kg)</label>
                 <div class="input-wrapper">
                     <input type="number" id="jumlah_telur" name="jumlah_telur" placeholder="Contoh: 10" step="0.1" required>
                 </div>
@@ -92,8 +99,8 @@ if (isset($_POST['simpan'])) {
             </div>
 
             <div class="action-buttons">
-                <a href="menu_transaksi.php" class="btn btn-batal" style="display: flex; justify-content: center; align-items: center;">Batal</a>
-                <button type="submit" name="simpan" class="btn btn-simpan">Simpan</button>
+                <a href="menu_transaksi.php" class="btn btn-batal" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">Batal</a>
+                <button type="submit" name="simpan" class="btn btn-simpan">Simpan Penjualan</button>
             </div>
 
         </form>

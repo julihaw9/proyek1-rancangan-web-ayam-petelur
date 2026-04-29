@@ -15,5 +15,5 @@
         </ul>
     </nav>
 
-    <a href="index.php" class="logout-button" onclick="">Logout</a>
+    <a href="logout.php" class="logout-button" onclick="">Logout</a>
 </aside>

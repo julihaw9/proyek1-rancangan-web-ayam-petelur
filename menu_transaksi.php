@@ -95,6 +95,7 @@ $query_transaksi = mysqli_query($conn, "
 
             <div class="btn-group">
                 <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Data Penjualan</a>
+                <a href="catatan_penjualan_ayam.php" class="btn-hijau">+ Tambah Data Penjualan Ayam</a>
                 <a href="catatpengeluaran.php" class="btn-merah">+ Tambah Data Pengeluaran</a>
             </div>
 

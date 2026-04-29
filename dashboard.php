@@ -5,6 +5,8 @@ include("koneksi.php");
 if (!isset($_SESSION['login'])) {
     header("Location: index.php");
     exit;
+} else {
+    echo "<script>alert('Login berhasil!');</script>";
 }
 
 // 1. Ambil Data Kartu

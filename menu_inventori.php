@@ -5,14 +5,14 @@ include("koneksi.php");
 // Proteksi login
 if (!isset($_SESSION['login'])) {
     header("Location: index.php");
-    exit; // Tambahkan exit setelah header redirect
+    exit;
 }
 
 // 1. Hitung Total Ayam
 $query_ayam = mysqli_query($conn, "SELECT SUM(total_ayam) as total FROM blok_kandang");
 $data_ayam = mysqli_fetch_assoc($query_ayam);
 
-// 2. Hitung Total Kandang (Menghitung jumlah baris/blok yang ada di database)
+// 2. Hitung Total Kandang
 $query_kandang = mysqli_query($conn, "SELECT COUNT(id_blok_kandang) as totalkandang FROM blok_kandang");
 $data_kandang = mysqli_fetch_assoc($query_kandang);
 
@@ -34,38 +34,37 @@ if (!$query_riwayat) {
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Inventori</title>
+    <title>Dashboard Inventori - Prima Farm</title>
     <link rel="stylesheet" href="menu.css">
     <style>
-        /* Tambahan style untuk label status agar lebih menarik */
         .status-badge {
             padding: 5px 10px;
             border-radius: 12px;
             font-size: 12px;
             font-weight: bold;
         }
-
-        .produktif {
-            background-color: #dcfce7;
-            color: #166534;
+        .produktif { background-color: #dcfce7; color: #166534; }
+        .afkir { background-color: #fee2e2; color: #991b1b; }
+        
+        /* Style Tombol Aksi */
+        .btn-aksi {
+            padding: 6px 12px;
+            text-decoration: none;
+            font-size: 12px;
+            border-radius: 4px;
+            margin-right: 5px;
+            display: inline-block;
+            transition: 0.3s;
         }
-
-        .belum-produktif {
-            background-color: #fef9c3;
-            color: #854d0e;
-        }
-
-        .afkir {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
+        .btn-jual { background-color: #3b82f6; color: white; border: none; }
+        .btn-hapus { background-color: #ef4444; color: white; border: none; }
+        .btn-jual:hover { background-color: #2563eb; }
+        .btn-hapus:hover { background-color: #dc2626; }
     </style>
 </head>
-
 <body>
 
     <div class="container">
@@ -84,14 +83,12 @@ if (!$query_riwayat) {
             <div class="card-container">
                 <div class="card">
                     <p>Total Populasi Ayam</p>
-                    <h2><?php echo number_format($data_ayam['total'] ?? 0); ?> <span
-                            style="font-size: 14px; color: #666;">Ekor</span></h2>
+                    <h2><?php echo number_format($data_ayam['total'] ?? 0); ?> <span style="font-size: 14px; color: #666;">Ekor</span></h2>
                 </div>
 
                 <div class="card">
                     <p>Total Blok Kandang</p>
-                    <h2><?php echo $data_kandang['totalkandang'] ?? 0; ?> <span
-                            style="font-size: 14px; color: #666;">Blok</span></h2>
+                    <h2><?php echo $data_kandang['totalkandang'] ?? 0; ?> <span style="font-size: 14px; color: #666;">Blok</span></h2>
                 </div>
             </div>
 
@@ -104,32 +101,25 @@ if (!$query_riwayat) {
                             <th>Populasi</th>
                             <th>Umur (Minggu)</th>
                             <th>Status</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (mysqli_num_rows($query_riwayat) > 0) { ?>
-                            <?php
+                        <?php if (mysqli_num_rows($query_riwayat) > 0) { 
                             while ($row = mysqli_fetch_assoc($query_riwayat)) {
-                                // 1. Hitung selisih minggu sejak tanggal pembelian sampai sekarang
+                                // Hitung umur
                                 $tgl_beli = new DateTime($row['tanggal_pembelian_ayam']);
                                 $sekarang = new DateTime();
                                 $selisih = $sekarang->diff($tgl_beli);
                                 $minggu_sejak_beli = floor($selisih->days / 7);
+                                $total_umur_minggu = $minggu_sejak_beli + 18; // Asumsi beli umur 18 mgg
 
-                                // 2. Tambahkan estimasi umur awal (Asumsi: Ayam dibeli saat umur 18 minggu)
-                                $umur_awal_beli = 18;
-                                $total_umur_minggu = $minggu_sejak_beli + $umur_awal_beli;
-
-                                // 3. Tentukan Status berdasarkan total umur
                                 if ($total_umur_minggu > 90) {
-                                    $status = "Afkir";
-                                    $class = "afkir";
+                                    $status = "Afkir"; $class = "afkir";
                                 } else {
-                                    // Karena awal beli sudah produktif, maka status defaultnya adalah Produktif
-                                    $status = "Produktif";
-                                    $class = "produktif";
+                                    $status = "Produktif"; $class = "produktif";
                                 }
-                                ?>
+                        ?>
                                 <tr>
                                     <td><strong>Blok <?php echo $row['id_blok_kandang']; ?></strong></td>
                                     <td><?php echo number_format($row['total_ayam']); ?> ekor</td>
@@ -139,12 +129,17 @@ if (!$query_riwayat) {
                                             <?php echo $status; ?>
                                         </span>
                                     </td>
+                                    <td>
+                                        <a href="catatan_penjualan_ayam.php?id_blok=<?php echo $row['id_blok_kandang']; ?>" class="btn-aksi btn-jual">Jual Ayam</a>
+                                        
+                                        <a href="hapus_blok.php?id=<?php echo $row['id_blok_kandang']; ?>" 
+                                           class="btn-aksi btn-hapus" 
+                                           onclick="return confirm('Yakin ingin menghapus Blok <?php echo $row['id_blok_kandang']; ?>? Pastikan ayam sudah terjual habis.')">Hapus</a>
+                                    </td>
                                 </tr>
-                            <?php } ?>
-                        <?php } else { ?>
-                            <tr>
-                                <td colspan="4" style="text-align: center;">Belum ada data inventori.</td>
-                            </tr>
+                        <?php } 
+                        } else { ?>
+                            <tr><td colspan="5" style="text-align: center;">Belum ada data.</td></tr>
                         <?php } ?>
                     </tbody>
                 </table>
@@ -153,5 +148,4 @@ if (!$query_riwayat) {
     </div>
 
 </body>
-
 </html>
