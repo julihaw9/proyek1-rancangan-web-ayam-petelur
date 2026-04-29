@@ -9,29 +9,22 @@ if (!isset($_SESSION['login'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitasi input agar aman dari SQL Injection
+    
     $tanggal     = mysqli_real_escape_string($conn, $_POST['tanggal']);
     $total_telur = mysqli_real_escape_string($conn, $_POST['total_telur']);
-    $telur_rusak = mysqli_real_escape_string($conn, $_POST['telur_rusak']);
     
-    // Logika perhitungan
-    $telur_baik  = $total_telur - $telur_rusak; 
-    
-    // ID Petugas sesuai data di screenshot (1235)
-    // Di masa depan, ini bisa diambil dari $_SESSION['id_petugas']
-    $id_petugas  = 1235; 
 
-    // 1. Insert ke tabel produksi_telur
+    $id_petugas  = $_SESSION['id_petugas'];
+
+    
     $query_produksi = "INSERT INTO produksi_telur (id_petugas, tanggal, total_telur) 
                        VALUES ('$id_petugas', '$tanggal', '$total_telur')";
     
     if (mysqli_query($conn, $query_produksi)) {
-        // Mengambil ID terakhir yang baru saja diinsert
         $id_produksi = mysqli_insert_id($conn);
         
-        // 2. Insert ke tabel detail_produksi_telur
-        $query_detail = "INSERT INTO detail_produksi_telur (id_produksi, jumlah_telur_baik, jumlah_telur_rusak) 
-                         VALUES ('$id_produksi', '$telur_baik', '$telur_rusak')";
+        $query_detail = "INSERT INTO detail_produksi_telur (id_produksi, jumlah_telur_baik) 
+                         VALUES ('$id_produksi', '$telur_baik')";
         
         if (mysqli_query($conn, $query_detail)) {
             echo "<script>alert('Data produksi berhasil dicatat!'); window.location='menu_produksi.php';</script>";
@@ -69,11 +62,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="number" id="total_telur" name="total_telur" placeholder="Contoh: 1500" step="0.1" required>
             </div>
 
-            <div class="form-group">
-                <label for="telur_rusak">Telur Rusak (Butir/Kg)</label>
-                <input type="number" id="telur_rusak" name="telur_rusak" placeholder="Contoh: 30" step="0.1" required>
-            </div>
-
             <div class="action-buttons">
                 <button type="button" class="btn btn-batal" onclick="window.location.href='menu_produksi.php';">Batal</button>
                 <button type="submit" class="btn btn-simpan">Simpan Data</button>
@@ -82,18 +70,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
 
-    <script>
-        // Validasi sederhana agar telur rusak tidak lebih besar dari total
-        document.getElementById('formProduksi').onsubmit = function() {
-            const total = parseFloat(document.getElementById('total_telur').value);
-            const rusak = parseFloat(document.getElementById('telur_rusak').value);
-            
-            if (rusak > total) {
-                alert("Jumlah telur rusak tidak boleh lebih besar dari total produksi!");
-                return false;
-            }
-            return true;
-        };
-    </script>
 </body>
 </html>

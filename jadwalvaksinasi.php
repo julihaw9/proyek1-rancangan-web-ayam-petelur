@@ -10,8 +10,8 @@ if (!isset($_SESSION['login'])) {
 
 if (isset($_POST['simpan'])) {
     // Sanitasi input agar aman dari SQL Injection
-    $id_blok    = mysqli_real_escape_string($conn, $_POST['id_blok_kandang']);
-    $tanggal    = mysqli_real_escape_string($conn, $_POST['jadwal_vaksinasi']);
+    $id_blok = mysqli_real_escape_string($conn, $_POST['id_blok_kandang']);
+    $tanggal = mysqli_real_escape_string($conn, $_POST['jadwal_vaksinasi']);
     $keterangan = mysqli_real_escape_string($conn, $_POST['keterangan']);
 
     // INSERT disesuaikan dengan kolom di database: id_blok_kandang, jadwal, status, keterangan
@@ -29,28 +29,37 @@ if (isset($_POST['simpan'])) {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Tambah Jadwal Vaksinasi</title>
     <link rel="stylesheet" href="form.css">
 </head>
+
 <body>
 
     <form action="" method="POST">
         <div class="modal-card">
             <h2>Tambah Jadwal Vaksinasi</h2>
-
             <div class="form-group">
-                <label>Blok Kandang:</label>
-                <select name="id_blok_kandang" required>
-                    <option value="">-- Pilih Blok --</option>
-                    <?php
-                    $q_blok = mysqli_query($conn, "SELECT * FROM blok_kandang");
-                    while ($b = mysqli_fetch_assoc($q_blok)) {
-                        echo "<option value='{$b['id_blok_kandang']}'>Blok {$b['id_blok_kandang']}</option>";
-                    }
-                    ?>
-                </select>
+                <label for="id_blok_kandang">Pilih Batch (Blok Kandang)</label>
+                <div class="input-wrapper">
+                    <select name="id_blok_kandang" id="id_blok_kandang" required>
+                        <option value="">-- Pilih Blok --</option>
+
+                        <?php
+                        $q_blok = mysqli_query($conn, "SELECT * FROM blok_kandang");
+                        while ($b = mysqli_fetch_assoc($q_blok)):
+                            ?>
+                            <option value="<?= $b['id_blok_kandang']; ?>">
+                                Blok
+                                <?= $b['id_blok_kandang']; ?> (Tersisa:
+                                <?= $b['total_ayam']; ?> Ekor)
+                            </option>
+                        <?php endwhile; ?>
+
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
@@ -64,11 +73,13 @@ if (isset($_POST['simpan'])) {
             </div>
 
             <div class="action-buttons">
-                <button type="button" class="btn btn-batal" onclick="location.href='menu_jadwalvaksinasi.php';">Batal</button>
+                <button type="button" class="btn btn-batal"
+                    onclick="location.href='menu_jadwalvaksinasi.php';">Batal</button>
                 <button type="submit" name="simpan" class="btn btn-simpan">Simpan</button>
             </div>
         </div>
     </form>
 
 </body>
+
 </html>

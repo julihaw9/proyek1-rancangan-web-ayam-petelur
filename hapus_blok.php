@@ -16,15 +16,15 @@ if (isset($_GET['id'])) {
     if (mysqli_query($conn, $query)) {
         echo "<script>
                 alert('Blok $id berhasil dihapus!');
-                window.location='inventori_dashboard.php'; 
+                window.location='menu_inventori.php'; 
               </script>";
     } else {
         echo "<script>
                 alert('Gagal menghapus: Data mungkin sedang digunakan di tabel lain.');
-                window.location='inventori_dashboard.php';
+                window.location='menu_inventori.php';
               </script>";
     }
 } else {
-    header("Location: inventori_dashboard.php");
+    header("Location: menu_inventori.php");
 }
 ?>

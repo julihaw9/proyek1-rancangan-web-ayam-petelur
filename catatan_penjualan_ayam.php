@@ -88,25 +88,23 @@ if (isset($_POST['simpan'])) {
             </div>
 
             <div class="form-group">
-                <label for="id_blok_kandang">Blok Kandang (Asal Ayam)</label>
+                <label for="id_blok_kandang">Pilih Batch (Blok Kandang)</label>
                 <div class="input-wrapper">
                     <select name="id_blok_kandang" id="id_blok_kandang" required>
-                        <option value="">-- Pilih Blok Kandang --</option>
+                        <option value="">-- Pilih Blok --</option>
                         <?php
-                        // Pastikan query blok kandang berhasil sebelum di-looping
-                        if ($daftar_blok) {
-                            while ($row = mysqli_fetch_assoc($daftar_blok)):
-                                ?>
-                                <option value="<?= $row['id_blok_kandang'] ?>">
-                                    Blok Kandang ID: <?= $row['id_blok_kandang'] ?>
-                                </option>
-                                $id_terpilih = $_GET['id_blok'] ?? '';
-                                <option value="<?= $row['id_blok_kandang'] ?>" <?= ($id_terpilih == $row['id_blok_kandang']) ? 'selected' : '' ?>>
-                                    Blok Kandang ID: <?= $row['id_blok_kandang'] ?>
-                                <?php
-                            endwhile;
+                        $id_terpilih = $_GET['id_blok_kandang'] ?? '';
+
+                        if ($daftar_blok && mysqli_num_rows($daftar_blok) > 0) {
+                            while ($row = mysqli_fetch_assoc($daftar_blok)) {
+                                $selected = ($id_terpilih == $row['id_blok_kandang']) ? 'selected' : '';
+
+                                echo "<option value='{$row['id_blok_kandang']}' $selected>";
+                                echo "Blok Kandang: " . $row['id_blok_kandang'];
+                                echo "</option>";
+                            }
                         } else {
-                            echo '<option value="">Gagal memuat blok kandang</option>';
+                            echo '<option value="">Data blok tidak tersedia</option>';
                         }
                         ?>
                     </select>

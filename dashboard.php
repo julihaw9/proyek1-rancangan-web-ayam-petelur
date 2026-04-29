@@ -20,29 +20,35 @@ $total_telur = $d_telur['total'] ?? 0;
 
 // 2. Query Profit (Sederhana & Pasti Jalan)kk
 // Kita ambil data 6 bulan terakhir
+// Buat array penampung
 $labels = [];
 $profits = [];
 
 for ($i = 5; $i >= 0; $i--) {
-    $bulan_angka = date('m', strtotime("-$i month"));
-    $bulan_nama = date('M', strtotime("-$i month"));
+    // Ambil tanggal pada hari pertama bulan tersebut agar tidak kena bug 31 hari
+    $date = new DateTime("first day of -$i months");
+    $monthNum = $date->format('n'); // 1-12
+    $yearNum = $date->format('Y');
+    $monthName = $date->format('M'); // Jan, Feb, Mar...
+
+    $labels[] = $monthName;
+
+    // Ambil data profit dari database berdasarkan bulan & tahun
+    // Pastikan query kamu menjumlahkan total_uang sesuai bulan & tahun ini
+    $query = mysqli_query($conn, "
+        SELECT 
+            (SELECT COALESCE(SUM(total_uang), 0) FROM transaksi t 
+             LEFT JOIN pemasukan_telur pt ON t.id_transaksi = pt.id_transaksi 
+             WHERE MONTH(t.tanggal_transaksi) = '$monthNum' AND YEAR(t.tanggal_transaksi) = '$yearNum') 
+            - 
+            (SELECT COALESCE(SUM(total_uang), 0) FROM transaksi t 
+             LEFT JOIN pengeluaran p ON t.id_transaksi = p.id_transaksi 
+             WHERE MONTH(t.tanggal_transaksi) = '$monthNum' AND YEAR(t.tanggal_transaksi) = '$yearNum') 
+        as profit
+    ");
     
-    // Hitung Pemasukan bulan ini
-    $q_masuk = mysqli_query($conn, "SELECT SUM(pt.total_uang) as total FROM pemasukan_telur pt 
-                                    JOIN transaksi t ON pt.id_transaksi = t.id_transaksi 
-                                    WHERE MONTH(t.tanggal_transaksi) = '$bulan_angka'");
-    $d_masuk = mysqli_fetch_assoc($q_masuk);
-    
-    // Hitung Pengeluaran bulan ini
-    $q_keluar = mysqli_query($conn, "SELECT SUM(p.total_uang) as total FROM pengeluaran p 
-                                     JOIN transaksi t ON p.id_transaksi = t.id_transaksi 
-                                     WHERE MONTH(t.tanggal_transaksi) = '$bulan_angka'");
-    $d_keluar = mysqli_fetch_assoc($q_keluar);
-    
-    $total_p = ($d_masuk['total'] ?? 0) - ($d_keluar['total'] ?? 0);
-    
-    $labels[] = $bulan_nama;
-    $profits[] = (int)$total_p;
+    $data = mysqli_fetch_assoc($query);
+    $profits[] = (float)$data['profit'];
 }
 
 $labels_json = json_encode($labels);

@@ -27,7 +27,7 @@ if (isset($_POST['simpan'])) {
     }
 
     $id_produksi_otomatis = $data_produksi['id_produksi'];
-    $id_petugas = $_SESSION['id_petugas'] ?? 1235; 
+    $id_petugas = $_SESSION['id_petugas'] ?? 1; 
 
     // 3. Simpan ke tabel transaksi (induk)
     $query_transaksi = "INSERT INTO transaksi (id_petugas, tanggal_transaksi, jenis_transaksi) 
