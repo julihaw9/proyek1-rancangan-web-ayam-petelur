@@ -22,7 +22,7 @@ if (isset($_POST['simpan'])) {
     $keterangan = mysqli_real_escape_string($conn, $_POST['keterangan']);
 
     // 2. ID Petugas (Ambil dari session atau gunakan default 1235 seperti di foto)
-    $id_petugas = $_SESSION['id_petugas'] ?? 1235;
+    $id_petugas = $_SESSION['id_petugas'] ?? 1;
 
     // 3. INSERT ke tabel induk (transaksi)
     // Menambahkan keterangan 'Penjualan Ayam' untuk membedakan dengan telur

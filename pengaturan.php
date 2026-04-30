@@ -8,8 +8,11 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
-// Ambil ID Petugas dari session (Misal: 1235)
-$id_petugas = $_SESSION['id_petugas'] ?? 1235;
+if (isset($_SESSION["id_petugas"])) {
+    $id_petugas = $_SESSION["id_petugas"];
+} else {
+    $id_petugas = 1; // Default ke ID petugas 1 jika session tidak tersedia
+}
 
 // 1. Ambil data petugas saat ini untuk ditampilkan di form
 $query = mysqli_query($conn, "SELECT * FROM petugas WHERE id_petugas = '$id_petugas'");

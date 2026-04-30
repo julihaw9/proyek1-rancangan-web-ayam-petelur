@@ -15,7 +15,7 @@ if (!isset($_SESSION['login'])) {
 $query_summary = mysqli_query($conn, "
     SELECT 
         (SELECT COALESCE(SUM(total_uang), 0) FROM pemasukan_ayam) AS total_ayam,
-        (SELECT COALESCE(SUM(total_uang), 0) FROM pemasukan_telur) AS total_telur,
+        (SELECT COALESCE(SUM(total_uang), 0) FROM telur_terjual) AS total_telur,
         (SELECT COALESCE(SUM(total_uang), 0) FROM pengeluaran) AS total_pengeluaran
 ");
 $res_sum = mysqli_fetch_assoc($query_summary);
@@ -24,18 +24,19 @@ $total_pemasukan = $res_sum['total_ayam'] + $res_sum['total_telur'];
 $total_pengeluaran = $res_sum['total_pengeluaran'];
 $profit = $total_pemasukan - $total_pengeluaran;
 
-// ✅ 2. RIWAYAT TRANSAKSI (Dengan perbaikan COLLATE agar tidak error)
+// ✅ 2. RIWAYAT TRANSAKSI (Gabungan Pemasukan Ayam, Telur, dan Pengeluaran)
 $query_transaksi = mysqli_query($conn, "
     SELECT 
         t.tanggal_transaksi,
-        pa.jumlah_ayam AS jumlah,
+        pa.jumlah_ayam AS jumlah, 
         pa.total_uang,
-        CAST('Pemasukan' AS CHAR) COLLATE utf8mb4_general_ci AS jenis,
-        CAST('Ayam' AS CHAR) COLLATE utf8mb4_general_ci AS sumber,
-        pa.keterangan COLLATE utf8mb4_general_ci AS keterangan,
+        'Pemasukan' AS jenis,
+        'Ayam' AS sumber,
+        pa.keterangan,
         t.id_transaksi
     FROM pemasukan_ayam pa
     JOIN transaksi t ON pa.id_transaksi = t.id_transaksi
+    WHERE t.tanggal_transaksi >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
 
     UNION ALL
 
@@ -43,29 +44,36 @@ $query_transaksi = mysqli_query($conn, "
         t.tanggal_transaksi,
         pt.jumlah_telur AS jumlah,
         pt.total_uang,
-        CAST('Pemasukan' AS CHAR) COLLATE utf8mb4_general_ci AS jenis,
-        CAST('Telur' AS CHAR) COLLATE utf8mb4_general_ci AS sumber,
-        pt.keterangan COLLATE utf8mb4_general_ci AS keterangan,
+        'Pemasukan' AS jenis,
+        'Telur' AS sumber,
+        pt.keterangan,
         t.id_transaksi
-    FROM pemasukan_telur pt
+    FROM telur_terjual pt
     JOIN transaksi t ON pt.id_transaksi = t.id_transaksi
+    WHERE t.tanggal_transaksi >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
 
     UNION ALL
 
     SELECT 
         t.tanggal_transaksi,
-        CAST('-' AS CHAR) COLLATE utf8mb4_general_ci AS jumlah,
+        '-' AS jumlah,
         p.total_uang,
-        CAST('Pengeluaran' AS CHAR) COLLATE utf8mb4_general_ci AS jenis,
-        CAST('-' AS CHAR) COLLATE utf8mb4_general_ci AS sumber,
-        p.keterangan COLLATE utf8mb4_general_ci AS keterangan,
+        'Pengeluaran' AS jenis,
+        'Umum' AS sumber,
+        p.keterangan,
         t.id_transaksi
     FROM pengeluaran p
     JOIN transaksi t ON p.id_transaksi = t.id_transaksi
+    WHERE t.tanggal_transaksi >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
 
     ORDER BY tanggal_transaksi DESC
-    LIMIT 10
+    LIMIT 20
 ");
+
+// Cek jika query gagal (untuk mempermudah debugging)
+if (!$query_transaksi) {
+    die("Kesalahan Query: " . mysqli_error($conn));
+}
 ?>
 
 <!DOCTYPE html>
@@ -88,13 +96,12 @@ $query_transaksi = mysqli_query($conn, "
         <main>
             <div class="top-bar">
                 <h1>Analisis Keuangan</h1><br>
-                <input type="text" placeholder="Cari transaksi...">
             </div>
 
             <p>Pantau arus kas masuk dan keluar secara real-time.</p>
 
             <div class="btn-group">
-                <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Data Penjualan</a>
+                <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Data Penjualan telur</a>
                 <a href="catatan_penjualan_ayam.php" class="btn-hijau">+ Tambah Data Penjualan Ayam</a>
                 <a href="catatpengeluaran.php" class="btn-merah">+ Tambah Data Pengeluaran</a>
             </div>

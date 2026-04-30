@@ -1,0 +1,57 @@
+
+body .vaksinasi .warning-box {
+    background: #ffdcdb !important;
+    padding: 20px !important;
+    border-radius: 12px !important;
+    border: 1px solid #fc1111 !important;
+
+    /* SOLUSI UTAMA: Agar tidak sampai pojok */
+    max-width: 90% !important;
+    /* Batas lebar maksimal */
+    width: 900px !important;
+    /* Lebar ideal */
+    margin: 25px 0 25px 0 !important;
+    /* Atur margin: atas 0, kanan 0, bawah 25px, kiri 0 */
+}
+
+.vaksinasi .warning-card {
+    background: white !important;
+    padding: 15px !important;
+    margin-top: 10px !important;
+    border-left: 5px solid #ffc107 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+.vaksinasi .btn-hijau {
+    background: #28a745;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s;
+    white-space: nowrap; /* Mencegah tombol turun ke bawah (wrap) */
+}
+
+.vaksinasi .btn-hijau:hover {
+    background: #218838;
+}
+
+
+.vaksinasi .merah {
+    color: red;
+}
+
+.vaksinasi .hijau {
+    color: green;
+}
+
+.vaksinasi .btn-hijau {
+    background: #28a745;
+    color: white;
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 12px;
+}

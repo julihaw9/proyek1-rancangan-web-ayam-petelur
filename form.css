@@ -187,3 +187,46 @@ select option {
     background-color: #ffffff;
     color: #111111;
 }
+
+/* Menyamakan tampilan Select dengan Input */
+select {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 18px;
+    font-weight: 500;
+    border: 1.5px solid #D1D5DB;
+    border-radius: 12px;
+    color: #111111;
+    outline: none;
+    transition: all 0.2s ease;
+    background-color: #fff;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Khusus untuk Select Multiple agar tingginya pas */
+select[multiple] {
+    height: auto;
+    min-height: 150px; 
+    padding: 10px;
+}
+
+/* Style saat Select diklik/fokus */
+select:focus {
+    border-color: #EF892A;
+    box-shadow: 0 0 0 4px rgba(239, 137, 42, 0.1);
+    background-color: #fffdfa;
+}
+
+/* Style untuk isi pilihan (option) */
+select option {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    font-size: 16px;
+}
+
+/* Tambahkan sedikit jarak pada label di atas select */
+.form-group label {
+    margin-top: 12px;
+}

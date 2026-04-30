@@ -8,29 +8,29 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
+    // Ambil data dari form
     $tanggal     = mysqli_real_escape_string($conn, $_POST['tanggal']);
     $total_telur = mysqli_real_escape_string($conn, $_POST['total_telur']);
     
+    if (isset($_SESSION['id_petugas'])) {
+        $id_petugas = $_SESSION['id_petugas'];
+    } else {
+        $id_petugas = 1;
+    }
 
-    $id_petugas  = $_SESSION['id_petugas'];
-
-    
+    // Query 1: Input ke tabel produksi_telur
+    // Hapus tanda kutip satu ('') pada $id_petugas jika kolom di DB bertipe INT
     $query_produksi = "INSERT INTO produksi_telur (id_petugas, tanggal, total_telur) 
                        VALUES ('$id_petugas', '$tanggal', '$total_telur')";
     
     if (mysqli_query($conn, $query_produksi)) {
-        $id_produksi = mysqli_insert_id($conn);
-        
-        $query_detail = "INSERT INTO detail_produksi_telur (id_produksi, jumlah_telur_baik) 
-                         VALUES ('$id_produksi', '$telur_baik')";
-        
-        if (mysqli_query($conn, $query_detail)) {
-            echo "<script>alert('Data produksi berhasil dicatat!'); window.location='menu_produksi.php';</script>";
-        } else {
-            echo "Error Detail: " . mysqli_error($conn);
-        }
+        echo "<script>
+                alert('Data Produksi Telur Berhasil Disimpan!'); 
+                window.location='menu_produksi.php';
+              </script>";
     } else {
         echo "Error Produksi: " . mysqli_error($conn);
     }
@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="form-group">
-                <label for="total_telur">Total Telur (Butir/Kg)</label>
+                <label for="total_telur">Total Telur (Kg)</label>
                 <input type="number" id="total_telur" name="total_telur" placeholder="Contoh: 1500" step="0.1" required>
             </div>
 

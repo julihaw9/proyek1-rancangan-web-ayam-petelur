@@ -60,7 +60,7 @@ if (isset($_POST['login'])) {
 			</div>
 
 			<div class="action-buttons">
-        		<button type="submit" class="btn btn-simpan" name="login">Login</button>
+        		<button type="submit" class="btn btn-simpan" name="login" onclick="alert('Login berhasil!');window.location.href='dashboard.php'">Login</button>
       		</div>
 
 		</form>

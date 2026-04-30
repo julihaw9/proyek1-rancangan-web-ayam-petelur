@@ -37,16 +37,47 @@ aside nav ul li {
     margin-bottom: 20px;
 }
 
+
+/* Link Menu: Kunci agar Senter */
 aside nav ul li a {
+    display: flex;
+    /* Mengaktifkan Flexbox */
+    align-items: center;
+    /* Membuat konten (icon & teks) senter vertikal */
+    padding: 12px 15px;
     text-decoration: none;
-    color: #f0861c;
-    display: block;
-    padding: 5px;
-    border-radius: 6px;
+    color: #000000;
+    border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
+/* Styling Ikon agar Rapi */
+aside nav ul li a img {
+    width: 20px;
+    /* Lebar tetap */
+    height: 20px;
+    /* Tinggi tetap */
+    object-fit: contain;
+    /* Agar gambar tidak gepeng */
+    margin-right: 12px;
+    /* Jarak ke teks */
+}
+
+/* Styling Teks */
+aside nav ul li a span {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Hover & Active State */
 aside nav ul li a:hover {
-    background-color: #edd57d;
+    background-color: #ef9235;
+    color: white;
+}
+aside nav ul li a.active {
+    background-color: #f0861c;
+    /* Warna khas Prima Farm (Orange/Gold) */
+    color: #fff;
 }
 
 main {
@@ -241,10 +272,6 @@ input[type="radio"]:checked + label {
     color:red;
 }
 
-.hijau{
-    color:green;
-}
-
 .table-box{
     background:white;
     border-radius:12px;
@@ -355,4 +382,14 @@ input:focus {
 }
 simpan-button {
     border: none;
+}
+
+.selesai {
+    display: inline-block;
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
 }

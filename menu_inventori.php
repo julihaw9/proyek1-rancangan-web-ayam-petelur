@@ -76,7 +76,6 @@ if (!$query_riwayat) {
             <p>Kelola data populasi ayam per blok kandang</p>
 
             <div class="top-bar">
-                <input type="text" placeholder="Cari nomor kandang...">
                 <a href="inventori.php" class="btn-tambah">+ Tambah Data</a>
             </div>
 
