@@ -11,7 +11,7 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
-// ✅ 1. AMBIL SUMMARY KEUANGAN
+// SUMMARY KEUANGAN
 $query_summary = mysqli_query($conn, "
     SELECT 
         (SELECT COALESCE(SUM(total_uang), 0) FROM pemasukan_ayam) AS total_ayam,
@@ -24,7 +24,7 @@ $total_pemasukan = $res_sum['total_ayam'] + $res_sum['total_telur'];
 $total_pengeluaran = $res_sum['total_pengeluaran'];
 $profit = $total_pemasukan - $total_pengeluaran;
 
-// ✅ 2. RIWAYAT TRANSAKSI (Gabungan Pemasukan Ayam, Telur, dan Pengeluaran)
+// RIWAYAT TRANSAKSI
 $query_transaksi = mysqli_query($conn, "
     SELECT 
         t.tanggal_transaksi,
@@ -98,7 +98,11 @@ if (!$query_transaksi) {
                 <h1>Analisis Keuangan</h1><br>
             </div>
 
-            <p>Pantau arus kas masuk dan keluar secara real-time.</p>
+            <div class="top-bar">
+                <input type="text" placeholder="Cari transaksi...">
+            </div>
+
+            
 
             <div class="btn-group">
                 <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Data Penjualan telur</a>

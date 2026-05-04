@@ -21,8 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $id_petugas = 1;
     }
 
-    // Query 1: Input ke tabel produksi_telur
-    // Hapus tanda kutip satu ('') pada $id_petugas jika kolom di DB bertipe INT
     $query_produksi = "INSERT INTO produksi_telur (id_petugas, tanggal, total_telur) 
                        VALUES ('$id_petugas', '$tanggal', '$total_telur')";
     

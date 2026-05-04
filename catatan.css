@@ -1,0 +1,8 @@
+/* Tambahan styling sedikit untuk select agar konsisten dengan desainmu */
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+        }

@@ -8,17 +8,15 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
-if (isset($_SESSION["id_petugas"])) {
-    $id_petugas = $_SESSION["id_petugas"];
-} else {
-    $id_petugas = 1; // Default ke ID petugas 1 jika session tidak tersedia
-}
 
-// 1. Ambil data petugas saat ini untuk ditampilkan di form
+$id_petugas = $_SESSION["id_petugas"];
+
+
+// Ambil data petugas
 $query = mysqli_query($conn, "SELECT * FROM petugas WHERE id_petugas = '$id_petugas'");
 $data = mysqli_fetch_assoc($query);
 
-// 2. Proses Update Profil (Nama & Email)
+// 2. Update Profil (Nama & Email)
 if (isset($_POST['update_profil'])) {
     $nama = mysqli_real_escape_string($conn, $_POST['nama_petugas']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
@@ -30,12 +28,11 @@ if (isset($_POST['update_profil'])) {
     }
 }
 
-// 3. Proses Update Password
+// 3. Update Password
 if (isset($_POST['update_password'])) {
     $pw_lama = $_POST['pw_lama'];
     $pw_baru = $_POST['pw_baru'];
 
-    // Cek apakah password lama benar (sesuai database)
     if ($pw_lama == $data['password']) {
         $update_pw = mysqli_query($conn, "UPDATE petugas SET password = '$pw_baru' WHERE id_petugas = '$id_petugas'");
         if ($update_pw) {

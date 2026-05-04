@@ -9,7 +9,7 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
-// 1. Ambil Total Produksi dalam 1 Bulan Terakhir
+// Ambil Total Produksi dalam 1 Bulan Terakhir
 $query_total_bulan = mysqli_fetch_assoc(mysqli_query($conn, "
     SELECT SUM(total_telur) as total 
     FROM `produksi_telur` 

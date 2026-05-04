@@ -7,12 +7,21 @@ body {
 .container {
     display: grid;
     grid-template-columns: 220px auto;
-    height: 100vh;
+    height: 100vh;     /* Kunci tinggi container sesuai tinggi layar */
+    overflow: hidden;  /* Mencegah seluruh halaman scroll */
 }
 
 aside {
     background-image: linear-gradient(to bottom, #fde58d, #F2DB89);
     padding: 20px;
+    height: 100vh;      /* Mengikuti tinggi container */
+    overflow-y: auto;  /* Scroll hanya di dalam sidebar jika menu penuh */
+}
+
+main {   /* Konten utama setinggi layar */
+    overflow-y: auto;  /* HANYA bagian ini yang bisa di-scroll ke bawah */
+    padding: 20px;
+    margin-bottom: 3%;
 }
 
 .container h3 {
@@ -27,56 +36,54 @@ hr {
     border-top: 1px solid #f0861c;
     margin: 10px 0 30px 0;
 }
-
 aside nav ul {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 aside nav ul li {
     margin-bottom: 20px;
 }
 
-
-/* Link Menu: Kunci agar Senter */
 aside nav ul li a {
     display: flex;
-    /* Mengaktifkan Flexbox */
     align-items: center;
-    /* Membuat konten (icon & teks) senter vertikal */
-    padding: 12px 15px;
+    gap: 30px;
+    color: #ff9122;
     text-decoration: none;
-    color: #000000;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    padding: 10px;
+    transition: 0.3s;
 }
 
-/* Styling Ikon agar Rapi */
-aside nav ul li a img {
-    width: 20px;
-    /* Lebar tetap */
-    height: 20px;
-    /* Tinggi tetap */
-    object-fit: contain;
-    /* Agar gambar tidak gepeng */
-    margin-right: 12px;
-    /* Jarak ke teks */
+
+aside nav ul li a i {
+    font-size: 18px;
+    transition: 0.3s;
 }
 
-/* Styling Teks */
-aside nav ul li a span {
-    font-size: 15px;
-    font-weight: 500;
-}
-
-/* Hover & Active State */
+/* Hover */
 aside nav ul li a:hover {
-    background-color: #ef9235;
-    color: white;
+    background-color: #f0861c;
+    color: #fff;
+    border-radius: 10px;
 }
+
+aside nav ul li a:hover i {
+    background-color: #f0861c;
+    color: #fff;
+    border-radius: 10px;
+}
+
+/* Active */
 aside nav ul li a.active {
     background-color: #f0861c;
-    /* Warna khas Prima Farm (Orange/Gold) */
+    color: #fff;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+aside nav ul li a.active i {
     color: #fff;
 }
 
@@ -194,7 +201,7 @@ thead{
     color:white;
     border:none;
     padding:10px 20px;
-    border-radius:20px;
+    border-radius:10px;
     cursor:pointer;
     margin-right: 20px;
     margin-top: 10px;
@@ -219,7 +226,18 @@ thead{
     text-decoration: none;
     border:none;
     padding:10px 20px;
-    border-radius:20px;
+    border-radius:10px;
+    cursor:pointer;
+    margin-right: 20px;
+}
+
+.btn-biru{
+    background:#1e88e5;
+    color:white;
+    text-decoration: none;
+    border:none;
+    padding:10px 20px;
+    border-radius:10px;
     cursor:pointer;
     margin-right: 20px;
 }
@@ -229,7 +247,7 @@ thead{
     color:white;
     border:none;
     padding:10px 20px;
-    border-radius:20px;
+    border-radius:10px;
     text-decoration: none;
 }
 
@@ -393,3 +411,27 @@ simpan-button {
     text-decoration: none;
     text-align: center;
 }
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.produktif { background-color: #dcfce7; color: #166534; }
+.afkir { background-color: #fee2e2; color: #991b1b; }
+
+/* Style Tombol Aksi */
+.btn-aksi {
+    padding: 6px 12px;
+    text-decoration: none;
+    font-size: 12px;
+    border-radius: 4px;
+    margin-right: 5px;
+    display: inline-block;
+    transition: 0.3s;
+}
+.btn-jual { background-color: #3b82f6; color: white; border: none; }
+.btn-hapus { background-color: #ef4444; color: white; border: none; }
+.btn-jual:hover { background-color: #2563eb; }
+.btn-hapus:hover { background-color: #dc2626; }

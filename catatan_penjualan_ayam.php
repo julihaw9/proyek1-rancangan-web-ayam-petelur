@@ -8,7 +8,7 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
-// Mengambil daftar blok kandang untuk pilihan (Dropdown)
+
 // Ini menghindari error Foreign Key saat memasukkan id_blok_kandang
 $query_blok = "SELECT id_blok_kandang FROM blok_kandang";
 $daftar_blok = mysqli_query($conn, $query_blok);
@@ -61,16 +61,7 @@ if (isset($_POST['simpan'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catat Penjualan Ayam</title>
     <link rel="stylesheet" href="form.css">
-    <style>
-        /* Tambahan styling sedikit untuk select agar konsisten dengan desainmu */
-        select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-top: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="catatan.css">
 </head>
 
 <body>

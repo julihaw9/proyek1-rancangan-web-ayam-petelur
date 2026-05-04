@@ -1,0 +1,70 @@
+<?php
+include ("koneksi.php");
+
+if (isset($_POST['register'])) {
+    $nama = mysqli_real_escape_string($conn, $_POST['nama']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = $_POST['password']; // Sebaiknya gunakan password_hash() untuk keamanan
+
+    $cek_email = mysqli_query($conn, "SELECT * FROM petugas WHERE email='$email'");
+    
+    if (mysqli_num_rows($cek_email) > 0) {
+        echo "<script>alert('Email sudah digunakan, silakan gunakan email lain!');</script>";
+    } else {
+        $query = mysqli_query($conn, "INSERT INTO petugas (nama_petugas, email, password) VALUES ('$nama', '$email', '$password')");
+
+        if ($query) {
+            echo "<script>
+                    alert('Registrasi Berhasil! Silakan Login.');
+                    window.location.href='index.php';
+                  </script>";
+        } else {
+            echo "<script>alert('Registrasi Gagal!');</script>";
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrasi Petugas</title>
+    <link rel="stylesheet" href="form.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>REGISTRASI</h2>
+
+        <form class="form-group" action="registrasi.php" method="POST">
+
+            <label for="nama">Nama Lengkap</label>
+            <div class="input-wrapper">
+                <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
+            </div>
+
+            <label for="email">Email</label>
+            <div class="input-wrapper">
+                <input type="email" id="email" name="email" placeholder="Masukkan email" required>
+            </div>
+
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+                <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+            </div>
+
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-simpan" name="register">Daftar</button>
+            </div>
+            
+            <p style="text-align: center; margin-top: 10px; text-decoration: none;">
+                Sudah punya akun? <a href="index.php" style="text-decoration: none; color: blue;">Login di sini</a>
+            </p>
+
+        </form>
+    </div>
+
+</body>
+</html>

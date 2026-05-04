@@ -39,31 +39,6 @@ if (!$query_riwayat) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Inventori - Prima Farm</title>
     <link rel="stylesheet" href="menu.css">
-    <style>
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .produktif { background-color: #dcfce7; color: #166534; }
-        .afkir { background-color: #fee2e2; color: #991b1b; }
-        
-        /* Style Tombol Aksi */
-        .btn-aksi {
-            padding: 6px 12px;
-            text-decoration: none;
-            font-size: 12px;
-            border-radius: 4px;
-            margin-right: 5px;
-            display: inline-block;
-            transition: 0.3s;
-        }
-        .btn-jual { background-color: #3b82f6; color: white; border: none; }
-        .btn-hapus { background-color: #ef4444; color: white; border: none; }
-        .btn-jual:hover { background-color: #2563eb; }
-        .btn-hapus:hover { background-color: #dc2626; }
-    </style>
 </head>
 <body>
 
