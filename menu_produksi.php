@@ -23,7 +23,12 @@ $query_total_jual = mysqli_fetch_assoc(mysqli_query($conn, "
     JOIN transaksi t ON tt.id_transaksi = t.id_transaksi
     WHERE t.tanggal_transaksi >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)"));
 
-
+$query_total_jual_hari_ini = mysqli_fetch_assoc(mysqli_query($conn, "
+    SELECT SUM(jumlah_telur) as total_terjual 
+    FROM `telur_terjual` tt
+    JOIN transaksi t ON tt.id_transaksi = t.id_transaksi
+    WHERE t.tanggal_transaksi = CURDATE()
+"));
 
 $query_riwayat = mysqli_query($conn, "
     SELECT 
@@ -72,6 +77,12 @@ $query_riwayat = mysqli_query($conn, "
                     <h2><?= number_format($query_total_jual['total_terjual'] ?? 0, 1); ?></h2>
                     <span>Kg</span>
                 </div>
+
+                <div class="card">
+                    <p>Total Terjual <br>(Hari Ini)</p>
+                    <h2><?= number_format($query_total_jual_hari_ini['total_terjual'] ?? 0, 1); ?></h2>
+                    <span>Kg</span>
+                </div>
             </div>
 
             <div class="table-box">
@@ -99,7 +110,7 @@ $query_riwayat = mysqli_query($conn, "
                                 </td>
                                 <td>
                                     <a href="hapus_produksi.php?id=<?= $row['id_produksi']; ?>"
-                                        onclick="return confirm('Yakin ingin menghapus data ini?')">🗑️</a>
+                                        onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn-aksi btn-hapus">Hapus</a>
                                 </td>
                             </tr>
                         <?php } ?>

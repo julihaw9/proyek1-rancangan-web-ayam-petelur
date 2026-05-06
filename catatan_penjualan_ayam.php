@@ -14,40 +14,56 @@ $query_blok = "SELECT id_blok_kandang FROM blok_kandang";
 $daftar_blok = mysqli_query($conn, $query_blok);
 
 if (isset($_POST['simpan'])) {
-    // 1. Ambil dan amankan input dari form
+    // 1. Ambil input
     $tanggal = mysqli_real_escape_string($conn, $_POST['tanggal']);
     $id_blok_kandang = mysqli_real_escape_string($conn, $_POST['id_blok_kandang']);
     $jumlah_ayam = mysqli_real_escape_string($conn, $_POST['jumlah_ayam']);
     $total_uang = mysqli_real_escape_string($conn, $_POST['total_uang']);
     $keterangan = mysqli_real_escape_string($conn, $_POST['keterangan']);
 
-    // 2. ID Petugas (Ambil dari session atau gunakan default 1235 seperti di foto)
+    // --- VALIDASI TAMBAHAN ---
+    // Cek jika id_blok_kandang kosong
+    if (empty($id_blok_kandang)) {
+        echo "<script>alert('Error: Silakan pilih Blok Kandang terlebih dahulu!'); window.history.back();</script>";
+        exit;
+    }
+
     $id_petugas = $_SESSION['id_petugas'] ?? 1;
 
-    // 3. INSERT ke tabel induk (transaksi)
-    // Menambahkan keterangan 'Penjualan Ayam' untuk membedakan dengan telur
+    // 2. INSERT ke tabel transaksi
     $query_transaksi = "INSERT INTO transaksi (id_petugas, tanggal_transaksi, jenis_transaksi) 
                         VALUES ('$id_petugas', '$tanggal', 'pemasukan')";
 
     if (mysqli_query($conn, $query_transaksi)) {
-        // Ambil ID Transaksi yang baru saja terbuat
         $id_transaksi_baru = mysqli_insert_id($conn);
 
-        // 4. INSERT ke tabel anak (pemasukan_ayam)
+        // 3. INSERT ke tabel pemasukan_ayam
+        // Perhatikan: $id_blok_kandang tidak dibungkus kutip satu jika dipastikan angka, 
+        // tapi dalam PHP mysqli, membungkusnya tetap aman asalkan nilainya bukan string kosong.
         $query_pemasukan = "INSERT INTO pemasukan_ayam (id_transaksi, id_blok_kandang, jumlah_ayam, keterangan, total_uang) 
                             VALUES ('$id_transaksi_baru', '$id_blok_kandang', '$jumlah_ayam', '$keterangan', '$total_uang')";
 
         if (mysqli_query($conn, $query_pemasukan)) {
+
+            // 4. UPDATE STOK AYAM (Logika yang kita tambahkan sebelumnya)
+            $query_update_stok = "UPDATE blok_kandang 
+                                 SET total_ayam = total_ayam - $jumlah_ayam 
+                                 WHERE id_blok_kandang = '$id_blok_kandang'";
+
+            mysqli_query($conn, $query_update_stok);
+
             echo "<script>
-                    alert('Data Penjualan Ayam Berhasil Disimpan!'); 
+                    alert('Data Penjualan Berhasil Disimpan!'); 
                     window.location='menu_transaksi.php';
                   </script>";
             exit();
         } else {
-            echo "<script>alert('Gagal simpan ke pemasukan_ayam: " . mysqli_error($conn) . "');</script>";
+            // Jika gagal di sini, hapus transaksi yang tadi telanjur masuk agar tidak duplikat
+            mysqli_query($conn, "DELETE FROM transaksi WHERE id_transaksi = '$id_transaksi_baru'");
+            echo "Error Pemasukan: " . mysqli_error($conn);
         }
     } else {
-        echo "<script>alert('Gagal simpan ke transaksi: " . mysqli_error($conn) . "');</script>";
+        echo "Error Transaksi: " . mysqli_error($conn);
     }
 }
 
@@ -84,18 +100,13 @@ if (isset($_POST['simpan'])) {
                     <select name="id_blok_kandang" id="id_blok_kandang" required>
                         <option value="">-- Pilih Blok --</option>
                         <?php
-                        $id_terpilih = $_GET['id_blok_kandang'] ?? '';
+                        // Gunakan id_blok (sesuai link dari inventori) atau id_blok_kandang
+                        $id_terpilih = $_GET['id_blok'] ?? '';
 
-                        if ($daftar_blok && mysqli_num_rows($daftar_blok) > 0) {
-                            while ($row = mysqli_fetch_assoc($daftar_blok)) {
-                                $selected = ($id_terpilih == $row['id_blok_kandang']) ? 'selected' : '';
-
-                                echo "<option value='{$row['id_blok_kandang']}' $selected>";
-                                echo "Blok Kandang: " . $row['id_blok_kandang'];
-                                echo "</option>";
-                            }
-                        } else {
-                            echo '<option value="">Data blok tidak tersedia</option>';
+                        while ($row = mysqli_fetch_assoc($daftar_blok)) {
+                            // Jika ID dari database sama dengan ID dari URL, maka otomatis terpilih (selected)
+                            $selected = ($id_terpilih == $row['id_blok_kandang']) ? 'selected' : '';
+                            echo "<option value='{$row['id_blok_kandang']}' $selected>Blok Kandang: {$row['id_blok_kandang']}</option>";
                         }
                         ?>
                     </select>

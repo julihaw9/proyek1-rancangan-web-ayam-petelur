@@ -140,7 +140,7 @@ main {
 
 .top-bar{
     display:flex;
-    justify-content:space-between;
+    justify-content:left;
     align-items:center;
     margin:20px 0;
 }
@@ -165,10 +165,9 @@ main {
 .table-box{
     background:white;
     border-radius:12px;
-    border:1px solid #aaa;
     overflow:hidden;
     margin-top:20px;
-    width: 97%;
+    width: 100%;
 }
 
 .table-box h3{
@@ -181,13 +180,22 @@ table{
     border-collapse:collapse;
 }
 
-th, td{
-    padding:12px;
-    text-align:left;
+tr td{
+    border-bottom:1px solid #eee;
 }
 
+tr:hover td{
+    background:rgb(236, 236, 236);
+}
+
+th, td{
+    padding:12px;
+    text-align:center;
+}
+
+
 thead{
-    background:#ddd;
+    background: #feb974;
 }
 
 .status{
@@ -240,6 +248,7 @@ thead{
     border-radius:10px;
     cursor:pointer;
     margin-right: 20px;
+    margin-top: 10px;
 }
 
 .btn-merah{
@@ -290,27 +299,7 @@ input[type="radio"]:checked + label {
     color:red;
 }
 
-.table-box{
-    background:white;
-    border-radius:12px;
-    border:1px solid #aaa;
-    margin-top:20px;
-    overflow:hidden;
-}
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th, td{
-    padding:12px;
-    text-align:left;
-}
-
-thead{
-    background:#ddd;
-}
 
 .warning-box{
     background:#ffe3e3;
@@ -318,6 +307,7 @@ thead{
     padding:20px;
     border-radius:10px;
     margin-top:20px;
+    width: 100%;
 }
 
 .warning-card{

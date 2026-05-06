@@ -16,6 +16,14 @@ $data_ayam = mysqli_fetch_assoc($query_ayam);
 $query_kandang = mysqli_query($conn, "SELECT COUNT(id_blok_kandang) as totalkandang FROM blok_kandang");
 $data_kandang = mysqli_fetch_assoc($query_kandang);
 
+$query_produktif = mysqli_query($conn, "SELECT SUM(total_ayam) as total_produktif FROM blok_kandang 
+                                        WHERE tanggal_pembelian_ayam >= DATE_SUB(CURDATE(), INTERVAL 72 WEEK)");
+$data_produktif = mysqli_fetch_assoc($query_produktif);
+$total_ayam_produktif = $data_produktif['total_produktif'] ?? 0;
+
+// 4. Ambil Riwayat Data untuk Tabel
+$query_riwayat = mysqli_query($conn, "SELECT * FROM blok_kandang ORDER BY id_blok_kandang ASC");
+
 // 3. Ambil Riwayat Data
 $query_riwayat = mysqli_query($conn, "
     SELECT 
@@ -50,10 +58,10 @@ if (!$query_riwayat) {
             <h1>Inventori Ayam</h1>
             <p>Kelola data populasi ayam per blok kandang</p>
 
-            <div class="top-bar">
+            <div class="btn-group">
                 <a href="inventori.php" class="btn-tambah">+ Tambah Data</a>
+                <a href="catatan_penjualan_ayam.php" class="btn-tambah">Jual Ayam</a>
             </div>
-
             <div class="card-container">
                 <div class="card">
                     <p>Total Populasi Ayam</p>
@@ -63,6 +71,11 @@ if (!$query_riwayat) {
                 <div class="card">
                     <p>Total Blok Kandang</p>
                     <h2><?php echo $data_kandang['totalkandang'] ?? 0; ?> <span style="font-size: 14px; color: #666;">Blok</span></h2>
+                </div>
+
+                <div class="card">
+                    <p>Total Ayam Produktif</p>
+                    <h2><?php echo number_format($total_ayam_produktif); ?> <span style="font-size: 14px; color: #666;">Ekor</span></h2>
                 </div>
             </div>
 
@@ -93,6 +106,7 @@ if (!$query_riwayat) {
                                 } else {
                                     $status = "Produktif"; $class = "produktif";
                                 }
+                            
                         ?>
                                 <tr>
                                     <td><strong>Blok <?php echo $row['id_blok_kandang']; ?></strong></td>
@@ -104,8 +118,6 @@ if (!$query_riwayat) {
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="catatan_penjualan_ayam.php?id_blok=<?php echo $row['id_blok_kandang']; ?>" class="btn-aksi btn-jual">Jual Ayam</a>
-                                        
                                         <a href="hapus_blok.php?id=<?php echo $row['id_blok_kandang']; ?>" 
                                            class="btn-aksi btn-hapus" 
                                            onclick="return confirm('Yakin ingin menghapus Blok <?php echo $row['id_blok_kandang']; ?>? Pastikan ayam sudah terjual habis.')">Hapus</a>

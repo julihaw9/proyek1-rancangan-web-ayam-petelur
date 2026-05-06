@@ -94,8 +94,8 @@ mysqli_query($conn, $sql_cleanup);
                     <?php
                     $ada_peringatan = false;
                     foreach ($data_jadwal as $j):
-                        // Jika status 0 (belum) dan jadwal dalam rentang 0-2 hari
-                        if ($j['selisih'] >= 0 && $j['selisih'] <= 2 && $j['status'] == 0):
+                        // Jika status 0 (belum) dan jadwal dalam rentang 0-3 hari
+                        if ($j['selisih'] >= 0 && $j['selisih'] <= 3 && $j['status'] == 0):
                             $ada_peringatan = true;
                             ?>
                             <div class="warning-card">

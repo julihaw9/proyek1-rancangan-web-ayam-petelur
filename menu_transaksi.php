@@ -94,20 +94,17 @@ if (!$query_transaksi) {
         include("sidebar.php"); ?>
 
         <main>
-            <div class="top-bar">
-                <h1>Analisis Keuangan</h1><br>
-            </div>
+            <h1>Analisis Keuangan</h1>
 
-            <div class="top-bar">
-                <input type="text" placeholder="Cari transaksi...">
-            </div>
-
-            
+            <p>Pantau transaksi anda</p>
 
             <div class="btn-group">
                 <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Data Penjualan telur</a>
                 <a href="catatan_penjualan_ayam.php" class="btn-hijau">+ Tambah Data Penjualan Ayam</a>
                 <a href="catatpengeluaran.php" class="btn-merah">+ Tambah Data Pengeluaran</a>
+                <a href="cetak_laporan.php" target="_blank" class="btn-biru">
+                    <i class="fas fa-print"></i> Cetak Laporan (PDF)
+                </a>
             </div>
 
             <div class="card-container">
@@ -170,7 +167,8 @@ if (!$query_transaksi) {
 
                                     <td>
                                         <a href="hapus.php?id=<?= $row['id_transaksi'] ?>&sumber=<?= strtolower($row['sumber']) ?>"
-                                            onclick="return confirm('Yakin ingin menghapus data ini?')">🗑️</a>
+                                            onclick="return confirm('Yakin ingin menghapus data ini?')"
+                                            class="btn-aksi btn-hapus">Hapus</a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>

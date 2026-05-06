@@ -1,25 +1,5 @@
-<?php
-// 1. Pastikan ID Petugas ada di Session
-$id_petugas = $_SESSION['id_petugas'] ?? null;
-
-// 2. Inisialisasi variabel dengan nilai default agar tidak error "Undefined"
-$nama_tampilan = "Guest";
-$email_tampilan = "-";
-
-if ($id_petugas && isset($conn)) {
-    // 3. Ambil data dalam satu query yang efisien
-    $query_user = mysqli_query($conn, "SELECT nama_petugas, email FROM petugas WHERE id_petugas = '$id_petugas'");
-
-    if ($query_user && mysqli_num_rows($query_user) > 0) {
-        $data = mysqli_fetch_assoc($query_user);
-        $nama_tampilan = $data['nama_petugas'];
-        $email_tampilan = $data['email'];
-    }
-}
-?>
 <link rel="stylesheet" href="menu.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="sidebar.css">
 
 
 
@@ -73,22 +53,9 @@ if ($id_petugas && isset($conn)) {
         </ul>
     </nav>
     <hr>
-    <div class="user-card">
-        <div class="user-info">
-            <div class="avatar">
-                <i class="fas fa-user"></i>
-            </div>
-            <div>
-                <p class="nama">
-                    <?php echo htmlspecialchars($nama_tampilan); ?>
-                </p>
-                <p class="email">
-                    <?php echo htmlspecialchars($email_tampilan); ?>
-                </p>
-            </div>
-        </div>
-    </div>
 
-
-    <a href="logout.php" class="logout-button" onclick="return confirm('Yakin ingin keluar?')">Logout</a>
+    <a href="logout.php" class="logout-button" onclick="return confirm('Yakin ingin keluar?')">
+        <i class="fas fa-right-from-bracket"></i>
+        <span> Logout</span>
+    </a>
 </aside>
