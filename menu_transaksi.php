@@ -55,7 +55,7 @@ $sql_history = "
     SELECT t.tanggal_transaksi, pt.jumlah_telur AS jumlah, pt.total_uang, 'Pemasukan' AS jenis, 'Telur' AS sumber, pt.keterangan, t.id_transaksi
     FROM telur_terjual pt JOIN transaksi t ON pt.id_transaksi = t.id_transaksi $where_clause
     UNION ALL
-    SELECT t.tanggal_transaksi, '-' AS jumlah, p.total_uang, 'Pengeluaran' AS jenis, 'Umum' AS sumber, p.keterangan, t.id_transaksi
+    SELECT t.tanggal_transaksi, p.jumlah AS jumlah, p.total_uang, 'Pengeluaran' AS jenis, 'Pengeluaran' AS sumber, p.keterangan, t.id_transaksi
     FROM pengeluaran p JOIN transaksi t ON p.id_transaksi = t.id_transaksi $where_clause
     ORDER BY tanggal_transaksi DESC
 ";
@@ -75,6 +75,7 @@ if (!$query_transaksi) {
     <title>Analisis Keuangan</title>
     <link rel="stylesheet" href="menu.css">
     <style>
+<<<<<<< HEAD
         /* BAGIAN MODIFIKASI TAMPILAN */
         .filter-header {
             display: flex;
@@ -131,6 +132,13 @@ if (!$query_transaksi) {
         .btn-merah { background: #e53935; }
         .btn-biru { background: #1e88e5; }
         .btn-hijau:hover, .btn-merah:hover, .btn-biru:hover { opacity: 0.8; }
+=======
+        /* Tambahan style untuk form filter */
+        .filter-container { margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .filter-container select { padding: 8px; border-radius: 4px; border: 1px solid #ddd; }
+        .filter-container label { font-weight: bold; margin-right: 10px; }
+        .filter-container .btn-group a { display: flex;}
+>>>>>>> da019ac2b2a4db147212b34e0f7ad6594fced552
     </style>
 </head>
 <body>
@@ -162,11 +170,24 @@ if (!$query_transaksi) {
                         <option value="bulanan" <?= $periode == 'bulanan' ? 'selected' : '' ?>>30 Hari Terakhir</option>
                     </select>
                 </form>
+<<<<<<< HEAD
 
                 
             </div>
 
             <!-- Dashboard Cards -->
+=======
+                <div class="btn-group">
+                <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Jual Telur</a>
+                <a href="catatan_penjualan_ayam.php" class="btn-hijau">+ Tambah Jual Ayam</a>
+                <a href="catatpengeluaran.php" class="btn-merah">+ Tambah Pengeluaran</a>
+                <a href="cetak_laporan.php?periode=<?= $periode ?>" target="_blank" class="btn-biru">Cetak PDF</a>
+                </div>
+            </div>
+
+            
+
+>>>>>>> da019ac2b2a4db147212b34e0f7ad6594fced552
             <div class="card-container">
                 <div class="card">
                     <p>Total Pendapatan</p>
