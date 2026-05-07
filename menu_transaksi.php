@@ -75,10 +75,62 @@ if (!$query_transaksi) {
     <title>Analisis Keuangan</title>
     <link rel="stylesheet" href="menu.css">
     <style>
-        /* Tambahan style untuk form filter */
-        .filter-container { margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .filter-container select { padding: 8px; border-radius: 4px; border: 1px solid #ddd; }
-        .filter-container label { font-weight: bold; margin-right: 10px; }
+        /* BAGIAN MODIFIKASI TAMPILAN */
+        .filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Sejajar ke kiri */
+            gap: 20px;                  /* Jarak antara dropdown dan tombol */
+            margin-bottom: 25px;
+            padding-left: 15px;
+            background: #fff;    /* Menghilangkan kotak putih memanjang */
+            box-shadow: none;
+            border-radius: 20px;
+        }
+
+        .filter-header form {
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+
+        .filter-header label {
+            font-weight: bold;
+            margin-right: 10px;
+            white-space: nowrap; Agar teks tidak turun ke bawah
+        }
+
+        .filter-header select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: #fff;
+            width: auto;
+            min-width: 150px;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin: 0; /* Menghapus margin agar sejajar tengah dengan select */
+        }
+
+        /* Merapikan ukuran tombol agar tidak terlalu besar */
+        .btn-group a {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-hijau { background: #1f8b3a; }
+        .btn-merah { background: #e53935; }
+        .btn-biru { background: #1e88e5; }
+        .btn-hijau:hover, .btn-merah:hover, .btn-biru:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -90,8 +142,17 @@ if (!$query_transaksi) {
             <h1>Analisis Keuangan</h1>
             <p>Laporan berdasarkan periode: <strong><?= $label_periode ?></strong></p>
 
-            <!-- FORM FILTER PERIODE -->
-            <div class="filter-container">
+            <!-- CONTAINER BARU: Gabungan Select dan Button -->
+            <div class="filter-header" style="justify-content: space-between; padding-right: 5px; margin-right: 10px;">
+                <!-- Tombol Aksi di sampingnya -->
+                <div class="btn-group">
+                    <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Jual Telur</a>
+                    <a href="catatan_penjualan_ayam.php" class="btn-hijau">+ Jual Ayam</a>
+                    <a href="catatpengeluaran.php" class="btn-merah">+ Pengeluaran</a>
+                    <a href="cetak_laporan.php?periode=<?= $periode ?>" target="_blank" class="btn-biru">Cetak PDF</a>
+                </div>
+                
+                <!-- Dropdown Periode -->
                 <form method="GET" action="">
                     <label for="periode">Pilih Periode:</label>
                     <select name="periode" id="periode" onchange="this.form.submit()">
@@ -101,34 +162,31 @@ if (!$query_transaksi) {
                         <option value="bulanan" <?= $periode == 'bulanan' ? 'selected' : '' ?>>30 Hari Terakhir</option>
                     </select>
                 </form>
+
+                
             </div>
 
-            <div class="btn-group">
-                <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Jual Telur</a>
-                <a href="catatan_penjualan_ayam.php" class="btn-hijau">+ Tambah Jual Ayam</a>
-                <a href="catatpengeluaran.php" class="btn-merah">+ Tambah Pengeluaran</a>
-                <a href="cetak_laporan.php?periode=<?= $periode ?>" target="_blank" class="btn-biru">Cetak PDF</a>
-            </div>
-
+            <!-- Dashboard Cards -->
             <div class="card-container">
                 <div class="card">
-                    <p>Total Pendapatan (<?= $label_periode ?>)</p>
+                    <p>Total Pendapatan</p>
                     <h2>Rp <?= number_format($total_pemasukan, 0, ',', '.') ?></h2>
                 </div>
                 <div class="card">
-                    <p>Total Biaya (<?= $label_periode ?>)</p>
+                    <p>Total Biaya</p>
                     <h2 class="merah">Rp <?= number_format($total_pengeluaran, 0, ',', '.') ?></h2>
                 </div>
                 <div class="card">
-                    <p>Total Profit (<?= $label_periode ?>)</p>
+                    <p>Total Profit</p>
                     <h2 class="<?= $profit >= 0 ? 'hijau' : 'merah' ?>">
                         Rp <?= number_format($profit, 0, ',', '.') ?>
                     </h2>
                 </div>
             </div>
 
+            <!-- Tabel Riwayat -->
             <div class="table-box">
-                <h3>Riwayat Transaksi - <?= $label_periode ?></h3>
+                <h3 style="padding: 15px;">Riwayat Transaksi - <?= $label_periode ?></h3>
                 <table>
                     <thead>
                         <tr>
