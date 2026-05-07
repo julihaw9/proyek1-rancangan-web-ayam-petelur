@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 30, 2026 at 02:51 AM
+-- Generation Time: May 07, 2026 at 01:43 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -40,11 +40,12 @@ CREATE TABLE `blok_kandang` (
 --
 
 INSERT INTO `blok_kandang` (`id_blok_kandang`, `id_petugas`, `kapasitas_per_blok`, `total_ayam`, `tanggal_pembelian_ayam`) VALUES
-(1, 1, 42, 42, '2026-01-10'),
-(2, 1, 42, 42, '2026-01-12'),
+(1, 1, 42, 40, '2026-01-10'),
+(2, 1, 42, 40, '2026-01-12'),
 (3, 1, 42, 42, '2026-02-01'),
 (4, 1, 42, 42, '2026-02-15'),
-(5, 1, 42, 42, '2026-03-01');
+(5, 1, 42, 42, '2026-03-01'),
+(6, 3, 42, 40, '2024-06-06');
 
 -- --------------------------------------------------------
 
@@ -67,7 +68,10 @@ CREATE TABLE `jadwal_vaksinasi` (
 
 INSERT INTO `jadwal_vaksinasi` (`id_jadwal_vaksinasi`, `id_blok_kandang`, `jadwal`, `status`, `keterangan`, `tgl_selesai`) VALUES
 (3, 3, '2026-05-10', 0, 'Jadwal Vaksin Gumboro', NULL),
-(4, 4, '2026-05-12', 0, 'Jadwal Vaksin AI Rutin', NULL);
+(4, 4, '2026-05-12', 0, 'Jadwal Vaksin AI Rutin', NULL),
+(8, 1, '2026-05-13', 0, 'vaksin AQ', NULL),
+(9, 2, '2026-05-13', 0, 'vaksin AQ', NULL),
+(10, 3, '2026-05-13', 0, 'vaksin AQ', NULL);
 
 -- --------------------------------------------------------
 
@@ -100,7 +104,11 @@ INSERT INTO `pemasukan_ayam` (`id_pemasukan_ayam`, `id_transaksi`, `id_blok_kand
 (14, 11, 2, 20, 'Koreksi jumlah ayam', 300000.00),
 (15, 11, 4, 10, 'Ayam sampel baru', 150000.00),
 (16, 20, 1, 1, 'afkir', 35000.00),
-(17, 24, 1, 4, 'afkir', 175000.00);
+(17, 24, 1, 4, 'afkir', 175000.00),
+(18, 25, 1, 2, 'afkir', 70000.00),
+(19, 27, 1, 2, 'afkir', 70000.00),
+(20, 28, 2, 2, 'afkir', 69997.00),
+(21, 30, 6, 2, 'jual ke warung', 133999.00);
 
 -- --------------------------------------------------------
 
@@ -125,12 +133,12 @@ INSERT INTO `pemasukan_telur` (`id_pemasukan_telur`, `id_transaksi`, `id_produks
 (1, 11, 1, 45, 'Penjualan ke agen A', 1125000.00),
 (2, 11, 2, 40, 'Penjualan ke pasar lokal', 1000000.00),
 (3, 11, 3, 50, 'Penjualan ke langganan tetap', 1250000.00),
-(4, 11, 4, 40, 'Penjualan grosir', 1000000.00),
+(4, 11, NULL, 40, 'Penjualan grosir', 1000000.00),
 (5, 11, NULL, 50, 'Penjualan eceran', 1250000.00),
 (6, 11, 1, 45, 'Penjualan ke agen A', 1125000.00),
 (7, 11, 2, 40, 'Penjualan ke pasar lokal', 1000000.00),
 (8, 11, 3, 50, 'Penjualan ke langganan tetap', 1250000.00),
-(9, 11, 4, 40, 'Penjualan grosir', 1000000.00),
+(9, 11, NULL, 40, 'Penjualan grosir', 1000000.00),
 (10, 11, NULL, 50, 'Penjualan eceran', 1250000.00),
 (11, 14, NULL, 200, 'jualan', 5499999.00);
 
@@ -176,7 +184,9 @@ CREATE TABLE `petugas` (
 
 INSERT INTO `petugas` (`id_petugas`, `email`, `nama_petugas`, `password`) VALUES
 (1, 'pet@gmail.com', 'Uus Antonius', '123'),
-(2, 'petugas@gmail.com', 'Uus Antonius', '123');
+(2, 'petugas@gmail.com', 'Uus Antonius', '123'),
+(3, 'daitriwibowo2007@gmail.com', 'dai', '890'),
+(4, 'risol29@gmail.com', 'juli', '123');
 
 -- --------------------------------------------------------
 
@@ -199,7 +209,6 @@ INSERT INTO `produksi_telur` (`id_produksi`, `id_petugas`, `tanggal`, `total_tel
 (1, 1, '2026-04-25', 50),
 (2, 1, '2026-04-26', 48),
 (3, 1, '2026-04-27', 52),
-(4, 1, '2026-04-28', 45),
 (6, 1, '2026-04-29', 50);
 
 -- --------------------------------------------------------
@@ -225,7 +234,8 @@ INSERT INTO `telur_terjual` (`id_jual`, `id_transaksi`, `jumlah_telur`, `waktu_i
 (4, 11, 50, '2026-04-29 14:54:42', 'Penjualan grosir ke pasar harian', 750000),
 (5, 11, 10, '2026-04-29 14:54:42', 'Penjualan eceran warga sekitar', 160000),
 (6, 11, 25, '2026-04-29 14:54:42', 'Pesanan warung makan Berkah', 400000),
-(7, 23, 10, '2026-04-29 21:50:24', 'agen a', 250000);
+(7, 23, 10, '2026-04-29 21:50:24', 'agen a', 250000),
+(8, 29, 340, '2026-05-07 01:15:38', 'toko dai', 400000);
 
 -- --------------------------------------------------------
 
@@ -256,7 +266,13 @@ INSERT INTO `transaksi` (`id_transaksi`, `id_petugas`, `tanggal_transaksi`, `jen
 (21, 1, '2026-04-29', 'pemasukan'),
 (22, 1, '2026-04-29', 'pemasukan'),
 (23, 1, '2026-04-29', 'pemasukan'),
-(24, 1, '2026-04-30', 'pemasukan');
+(24, 1, '2026-04-30', 'pemasukan'),
+(25, 3, '2026-05-06', 'pemasukan'),
+(26, 3, '2026-05-06', 'pemasukan'),
+(27, 3, '2026-05-06', 'pemasukan'),
+(28, 3, '2026-05-06', 'pemasukan'),
+(29, 3, '2026-05-07', 'pemasukan'),
+(30, 3, '2026-05-07', 'pemasukan');
 
 --
 -- Indexes for dumped tables
@@ -334,19 +350,19 @@ ALTER TABLE `transaksi`
 -- AUTO_INCREMENT for table `blok_kandang`
 --
 ALTER TABLE `blok_kandang`
-  MODIFY `id_blok_kandang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_blok_kandang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `jadwal_vaksinasi`
 --
 ALTER TABLE `jadwal_vaksinasi`
-  MODIFY `id_jadwal_vaksinasi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_jadwal_vaksinasi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `pemasukan_ayam`
 --
 ALTER TABLE `pemasukan_ayam`
-  MODIFY `id_pemasukan_ayam` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_pemasukan_ayam` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `pemasukan_telur`
@@ -364,25 +380,25 @@ ALTER TABLE `pengeluaran`
 -- AUTO_INCREMENT for table `petugas`
 --
 ALTER TABLE `petugas`
-  MODIFY `id_petugas` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_petugas` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `produksi_telur`
 --
 ALTER TABLE `produksi_telur`
-  MODIFY `id_produksi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_produksi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `telur_terjual`
 --
 ALTER TABLE `telur_terjual`
-  MODIFY `id_jual` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_jual` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id_transaksi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id_transaksi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- Constraints for dumped tables

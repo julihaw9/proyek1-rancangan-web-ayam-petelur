@@ -60,7 +60,7 @@ if (!$query_riwayat) {
 
             <div class="btn-group">
                 <a href="inventori.php" class="btn-tambah">+ Tambah Data</a>
-                <a href="catatan_penjualan_ayam.php" class="btn-tambah">Jual Ayam</a>
+                <a href="update_ayam.php" class="btn-tambah">Update Data Ayam</a>
             </div>
             <div class="card-container">
                 <div class="card">

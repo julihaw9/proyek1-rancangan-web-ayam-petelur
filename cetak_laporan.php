@@ -1,4 +1,6 @@
 <?php
+
+date_default_timezone_set('Asia/Jakarta');
 session_start();
 include("koneksi.php");
 include("tanggal.php");
