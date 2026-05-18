@@ -69,48 +69,127 @@ if (!$query_transaksi) {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analisis Keuangan</title>
     <link rel="stylesheet" href="menu.css">
     <style>
-        /* Tambahan style untuk form filter */
-        .filter-container { margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .filter-container select { padding: 8px; border-radius: 4px; border: 1px solid #ddd; }
-        .filter-container label { font-weight: bold; margin-right: 10px; }
-        .filter-container .btn-group a { display: flex;}
+        /* Kontainer utama untuk menjajarkan Filter dan Tombol */
+        .top-action-bar {
+            display: flex;
+            justify-content: space-between;
+            /* Filter kiri, Tombol kanan */
+            align-items: flex-end;
+            /* Supaya bagian bawahnya sejajar rapi */
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            /* Agar aman di layar HP */
+        }
+
+        /* Style kotak filter (sesuai screenshot kamu) */
+        .filter-box-v2 {
+            background: #fff;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            /* Memberi ruang untuk filter */
+        }
+
+        /* Style Radio Button agar jadi kotak (Style Lama) */
+        .radio-group-lama {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .radio-group-lama input[type="radio"] {
+            display: none;
+        }
+
+        .radio-group-lama label {
+            padding: 10px 20px;
+            background: #e0e0e0;
+            /* Warna abu-abu default */
+            color: #333;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        /* Warna Merah untuk yang terpilih (Active) */
+        .radio-group-lama input[type="radio"]:checked+label {
+            background: #ff0000;
+            color: white;
+        }
+
+        /* Grup tombol tambah */
+        .btn-group-side {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-group-side .btn-hijau,
+        .btn-group-side .btn-merah {
+            padding: 12px 15px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            white-space: nowrap;
+            /* Mencegah teks terpotong */
+        }
     </style>
 </head>
+
 <body>
 
     <div class="container">
-        <?php $active = 'transaksi'; include("sidebar.php"); ?>
+        <?php $active = 'transaksi';
+        include("sidebar.php"); ?>
 
         <main>
             <h1>Analisis Keuangan</h1>
             <p>Laporan berdasarkan periode: <strong><?= $label_periode ?></strong></p>
 
-            <!-- FORM FILTER PERIODE -->
-            <div class="filter-container">
-                <form method="GET" action="">
-                    <label for="periode">Pilih Periode:</label>
-                    <select name="periode" id="periode" onchange="this.form.submit()">
-                        <option value="semua" <?= $periode == 'semua' ? 'selected' : '' ?>>Semua Waktu</option>
-                        <option value="harian" <?= $periode == 'harian' ? 'selected' : '' ?>>Hari Ini</option>
-                        <option value="mingguan" <?= $periode == 'mingguan' ? 'selected' : '' ?>>7 Hari Terakhir</option>
-                        <option value="bulanan" <?= $periode == 'bulanan' ? 'selected' : '' ?>>30 Hari Terakhir</option>
-                    </select>
-                </form>
-                <div class="btn-group">
-                <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Jual Telur</a>
-                <a href="catatan_penjualan_ayam.php" class="btn-hijau">+ Tambah Jual Ayam</a>
-                <a href="catatpengeluaran.php" class="btn-merah">+ Tambah Pengeluaran</a>
-                <a href="cetak_laporan.php?periode=<?= $periode ?>" target="_blank" class="btn-biru">Cetak PDF</a>
+            <div class="top-action-bar">
+
+                <div class="filter-box-v2">
+                    <label style="font-weight: bold;">Pilih Periode:</label>
+                    <form method="GET" action="">
+                        <div class="radio-group-lama">
+                            <input type="radio" name="periode" value="semua" id="semua" onchange="this.form.submit()"
+                                <?= $periode == 'semua' ? 'checked' : '' ?>>
+                            <label for="semua">Semua Waktu</label>
+
+                            <input type="radio" name="periode" value="harian" id="harian" onchange="this.form.submit()"
+                                <?= $periode == 'harian' ? 'checked' : '' ?>>
+                            <label for="harian">Hari Ini</label>
+
+                            <input type="radio" name="periode" value="mingguan" id="mingguan"
+                                onchange="this.form.submit()" <?= $periode == 'mingguan' ? 'checked' : '' ?>>
+                            <label for="mingguan">7 Hari Terakhir</label>
+
+                            <input type="radio" name="periode" value="bulanan" id="bulanan"
+                                onchange="this.form.submit()" <?= $periode == 'bulanan' ? 'checked' : '' ?>>
+                            <label for="bulanan">30 Hari Terakhir</label>
+                        </div>
+                    </form>
                 </div>
+
+                <div class="btn-group-side">
+                    <a href="revisicatatanpenjualan.php" class="btn-hijau">+ Tambah Jual Telur</a>
+                    <a href="catatan_penjualan_ayam.php" class="btn-hijau">+ Tambah Jual Ayam</a>
+                    <a href="catatpengeluaran.php" class="btn-merah">+ Tambah Pengeluaran</a>
+                </div>
+
             </div>
 
-            
+
 
             <div class="card-container">
                 <div class="card">
@@ -130,7 +209,13 @@ if (!$query_transaksi) {
             </div>
 
             <div class="table-box">
-                <h3>Riwayat Transaksi - <?= $label_periode ?></h3>
+                <h3>Riwayat Transaksi -
+                    <?= $label_periode ?>
+                </h3>
+
+                <div style="text-align: right; margin-bottom: 20px;">
+                    <a href="cetak_laporan.php?periode=<?= $periode ?>" target="_blank" class="btn-biru">Cetak PDF</a>
+                </div>
                 <table>
                     <thead>
                         <tr>
@@ -148,19 +233,24 @@ if (!$query_transaksi) {
                             <?php while ($row = mysqli_fetch_assoc($query_transaksi)): ?>
                                 <tr>
                                     <td><?= tanggal_indo($row['tanggal_transaksi']); ?></td>
-                                    <td><?= ($row['jumlah'] != '-' && $row['jumlah'] != null) ? number_format((float)$row['jumlah'], 0, ',', '.') : '-' ?></td>
-                                    <td><strong>Rp <?= number_format((float)($row['total_uang'] ?? 0), 0, ',', '.') ?></strong></td>
-                                    <td class="<?= ($row['jenis'] == 'Pemasukan') ? 'hijau' : 'merah' ?>"><?= $row['jenis'] ?></td>
+                                    <td><?= ($row['jumlah'] != '-' && $row['jumlah'] != null) ? number_format((float) $row['jumlah'], 0, ',', '.') : '-' ?>
+                                    </td>
+                                    <td><strong>Rp <?= number_format((float) ($row['total_uang'] ?? 0), 0, ',', '.') ?></strong>
+                                    </td>
+                                    <td class="<?= ($row['jenis'] == 'Pemasukan') ? 'hijau' : 'merah' ?>"><?= $row['jenis'] ?>
+                                    </td>
                                     <td><?= $row['sumber'] ?></td>
                                     <td><?= htmlspecialchars($row['keterangan'] ?? '-'); ?></td>
                                     <td>
                                         <a href="hapus.php?id=<?= $row['id_transaksi'] ?>&sumber=<?= strtolower($row['sumber']) ?>"
-                                           onclick="return confirm('Yakin hapus?')" class="btn-aksi btn-hapus">Hapus</a>
+                                            onclick="return confirm('Yakin hapus?')" class="btn-aksi btn-hapus">Hapus</a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr><td colspan="7" style="text-align: center;">Tidak ada transaksi pada periode ini.</td></tr>
+                            <tr>
+                                <td colspan="7" style="text-align: center;">Tidak ada transaksi pada periode ini.</td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -169,4 +259,5 @@ if (!$query_transaksi) {
     </div>
 
 </body>
+
 </html>

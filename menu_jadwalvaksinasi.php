@@ -75,6 +75,27 @@ mysqli_query($conn, $sql_cleanup);
     <title>Jadwal Vaksinasi Ayam</title>
     <link rel="stylesheet" href="menu.css">
     <link rel="stylesheet" href="vaksinasi.css">
+    <style>
+        .batalkan {
+            display: inline-block;
+            background-color: red;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .sls {
+            display: inline-block;
+            background-color: green;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
@@ -139,7 +160,7 @@ mysqli_query($conn, $sql_cleanup);
                     </div>
                 </div>
                 <section class="list-container">
-                    
+
                     <div class="table-box">
                         <h3>Riwayat Vaksinasi (Selesai)</h3>
                         <table>
@@ -165,13 +186,19 @@ mysqli_query($conn, $sql_cleanup);
                                             </td>
                                             <td>
                                                 <?= $row['keterangan']; ?>
-                                                </td>
-                                                <td>
-                                                    <a class="selesai" href="proses_selesai.php?id=<?= $row['id_jadwal_vaksinasi']; ?>"
-                                                        onclick="return confirm('Tandai jadwal ini sebagai SELESAI?')">
-                                                        Selesai
-                                                    </a>
-                                                    </td>
+                                            </td>
+                                            <td>
+                                                <a class="batalkan"
+                                                    href="proses_batalkan.php?id=<?= $row['id_jadwal_vaksinasi']; ?>"
+                                                    onclick="return confirm('Batalkan jadwal ini?')">
+                                                    Batalkan
+                                                </a>
+                                                <a class="sls"
+                                                    href="proses_selesai.php?id=<?= $row['id_jadwal_vaksinasi']; ?>"
+                                                    onclick="return confirm('Tandai jadwal ini sebagai SELESAI?')">
+                                                    Selesai
+                                                </a>
+                                            </td>
                                         </tr>
                                     <?php endwhile; ?>
                                 <?php else: ?>

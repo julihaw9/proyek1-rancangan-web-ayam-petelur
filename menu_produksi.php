@@ -35,13 +35,13 @@ switch ($periode) {
         $label_periode = "30 Hari Terakhir";
         break;
     default:
-        $where_produksi = ""; // Tampilkan semua jika tidak ada filter
+        $where_produksi = ""; 
         $where_transaksi = "";
         $label_periode = "Semua Waktu";
         break;
 }
 
-// 2. QUERY SUMMARY (Disesuaikan Filter)
+// 2. QUERY SUMMARY
 $query_total_prod = mysqli_fetch_assoc(mysqli_query($conn, "
     SELECT SUM(total_telur) as total 
     FROM `produksi_telur` pt
@@ -55,7 +55,6 @@ $query_total_jual = mysqli_fetch_assoc(mysqli_query($conn, "
     $where_transaksi
 "));
 
-// Tetap tampilkan total jual hari ini sebagai pembanding statis (Opsional)
 $query_total_jual_hari_ini = mysqli_fetch_assoc(mysqli_query($conn, "
     SELECT SUM(jumlah_telur) as total_terjual 
     FROM `telur_terjual` tt
@@ -63,7 +62,7 @@ $query_total_jual_hari_ini = mysqli_fetch_assoc(mysqli_query($conn, "
     WHERE t.tanggal_transaksi = CURDATE()
 "));
 
-// 3. QUERY RIWAYAT (Disesuaikan Filter)
+// 3. QUERY RIWAYAT
 $query_riwayat = mysqli_query($conn, "
     SELECT 
         pt.id_produksi,
@@ -89,11 +88,6 @@ $query_riwayat = mysqli_query($conn, "
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produksi Telur - Prima Farm</title>
     <link rel="stylesheet" href="menu.css">
-    <style>
-        .filter-box { margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .filter-box select { padding: 8px; border-radius: 5px; border: 1px solid #ccc; width: 200px; }
-        .filter-box label { font-weight: bold; margin-right: 10px; }
-    </style>
 </head>
 
 <body>
@@ -103,20 +97,34 @@ $query_riwayat = mysqli_query($conn, "
             <h1>Produksi Telur</h1>
             <p>Laporan produksi telur: <strong><?= $label_periode ?></strong></p>
 
-            <!-- SELECT PERIODE -->
-            <div class="filter-box">
-                <form method="GET" action="">
-                    <label>Pilih Periode:</label>
-                    <select name="periode" onchange="this.form.submit()">
-                        <option value="bulanan" <?= $periode == 'bulanan' ? 'selected' : '' ?>>30 Hari Terakhir</option>
-                        <option value="harian" <?= $periode == 'harian' ? 'selected' : '' ?>>Hari Ini</option>
-                        <option value="mingguan" <?= $periode == 'mingguan' ? 'selected' : '' ?>>7 Hari Terakhir</option>
-                        <option value="semua" <?= $periode == 'semua' ? 'selected' : '' ?>>Semua Waktu</option>
-                    </select>
-                </form>
+            <div class="btn-group">
+                <a href="produksi.php" class="btn-tambah">+ Tambah Data</a>
             </div>
 
-            <a href="produksi.php" class="btn-tambah">+ Tambah Data</a>
+            <!-- FILTER PERIODE DENGAN RADIO BUTTON -->
+            <div class="filter-container">
+                <form method="GET" action="">
+                    <label style="display: block; margin-bottom: 10px;">Pilih Periode:</label>
+
+                    <div class="radio-group">
+                        <input type="radio" name="periode" value="semua" id="semua" onchange="this.form.submit()"
+                            <?= $periode == 'semua' ? 'checked' : '' ?>>
+                        <label for="semua">Semua Waktu</label>
+
+                        <input type="radio" name="periode" value="harian" id="harian" onchange="this.form.submit()"
+                            <?= $periode == 'harian' ? 'checked' : '' ?>>
+                        <label for="harian">Hari Ini</label>
+
+                        <input type="radio" name="periode" value="mingguan" id="mingguan" onchange="this.form.submit()"
+                            <?= $periode == 'mingguan' ? 'checked' : '' ?>>
+                        <label for="mingguan">7 Hari Terakhir</label>
+
+                        <input type="radio" name="periode" value="bulanan" id="bulanan" onchange="this.form.submit()"
+                            <?= $periode == 'bulanan' ? 'checked' : '' ?>>
+                        <label for="bulanan">30 Hari Terakhir</label>
+                    </div>
+                </form>
+            </div>
 
             <div class="card-container">
                 <div class="card">
@@ -129,7 +137,6 @@ $query_riwayat = mysqli_query($conn, "
                     <h2><?= number_format($query_total_jual['total_terjual'] ?? 0, 1); ?></h2>
                     <span>Kg</span>
                 </div>
-
                 <div class="card">
                     <p>Total Terjual <br>(Hari Ini)</p>
                     <h2><?= number_format($query_total_jual_hari_ini['total_terjual'] ?? 0, 1); ?></h2>
@@ -161,7 +168,7 @@ $query_riwayat = mysqli_query($conn, "
                                     </td>
                                     <td>
                                         <a href="hapus_produksi.php?id=<?= $row['id_produksi']; ?>"
-                                            onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn-aksi btn-hapus">Hapus</a>
+                                           onclick="return confirm('Yakin ingin menghapus data ini?')" class="btn-aksi btn-hapus">Hapus</a>
                                     </td>
                                 </tr>
                             <?php } ?>

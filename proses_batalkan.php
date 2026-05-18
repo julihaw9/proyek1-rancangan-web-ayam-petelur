@@ -9,16 +9,14 @@ if (!isset($_SESSION['login'])) {
 
 if (isset($_GET['id'])) {
     $id = mysqli_real_escape_string($conn, $_GET['id']);
-    $tgl_sekarang = date("Y-m-d");
 
-    // Update status menjadi 1 dan catat tanggal selesainya
-    $sql = "UPDATE jadwal_vaksinasi 
-            SET status = 1, tgl_selesai = '$tgl_sekarang' 
+    // Menghapus data jadwal vaksinasi secara permanen
+    $sql = "DELETE FROM jadwal_vaksinasi 
             WHERE id_jadwal_vaksinasi = '$id'";
 
     if (mysqli_query($conn, $sql)) {
         echo "<script>
-                alert('Vaksinasi selesai! Data akan otomatis dihapus sistem dalam 7 hari.');
+                alert('Vaksinasi berhasil dibatalkan dan data dihapus!');
                 window.location='menu_jadwalvaksinasi.php';
               </script>";
     } else {
