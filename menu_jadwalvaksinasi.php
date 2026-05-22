@@ -400,7 +400,7 @@ mysqli_query($conn, $sql_cleanup_2);
                                             <div class="btn-aksi-group">
                                                 <a class="btn-tabel batalkan"
                                                    href="proses_batalkan.php?id=<?= $row['id_jadwal_vaksinasi']; ?>"
-                                                   onclick="return confirm('Batalkan jadwal ini?')">Batalkan</a>
+                                                   onclick="return confirm('Batalkan jadwal ini?')">Hapus</a>
                                                 <a class="btn-tabel sls"
                                                    href="proses_selesai.php?id=<?= $row['id_jadwal_vaksinasi']; ?>"
                                                    onclick="return confirm('Tandai jadwal ini sebagai SELESAI?')">Selesai</a>

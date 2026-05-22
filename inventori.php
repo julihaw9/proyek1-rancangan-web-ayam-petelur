@@ -9,14 +9,15 @@ if (!isset($_SESSION['login'])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil dan amankan input
+    $nama_blok   = mysqli_real_escape_string($conn, $_POST['nama_blok']);
     $total_ayam    = mysqli_real_escape_string($conn, $_POST['jumlah_ayam']);
     $tanggal_beli  = mysqli_real_escape_string($conn, $_POST['tanggal_pembelian']);
     $kapasitas     = 42; // Sesuai data di screenshot kamu rata-rata 42
     $id_petugas    = $_SESSION['id_petugas'] ?? 1235;
 
     // Query Insert ke tabel blok_kandang
-    $sql = "INSERT INTO blok_kandang (id_petugas, kapasitas_per_blok, total_ayam, tanggal_pembelian_ayam) 
-            VALUES ('$id_petugas', '$kapasitas', '$total_ayam', '$tanggal_beli')";
+    $sql = "INSERT INTO blok_kandang (id_petugas, nama_blok, kapasitas_per_blok, total_ayam, tanggal_pembelian_ayam) 
+            VALUES ('$id_petugas', '$nama_blok', '$kapasitas', '$total_ayam', '$tanggal_beli')";
 
     if (mysqli_query($conn, $sql)) {
         echo "<script>
@@ -43,7 +44,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>Tambah Blok Ayam Baru</h2>
 
         <form action="" method="POST">
-            
+
+            <div class="form-group">
+                <label for="nama_blok">Nama Blok</label>
+                <div class="input-wrapper">
+                    <input type="text" id="nama_blok" name="nama_blok" placeholder="Contoh: Blok A" required>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="jumlah_ayam">Jumlah Ayam (Ekor)</label>
                 <div class="input-wrapper">

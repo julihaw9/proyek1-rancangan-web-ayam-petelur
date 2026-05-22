@@ -259,6 +259,7 @@ $query_riwayat = mysqli_query($conn, "
 
             <div class="btn-group">
                 <a href="produksi.php" class="btn-tambah">+ Tambah Data</a>
+                <a href="update_produksi.php" class="btn-tambah">Update Data</a>
             </div>
 
             <!-- CONTAINER UTAMA: CARD INFO DAN CARD FILTER DISATUKAN -->

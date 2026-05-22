@@ -26,6 +26,8 @@ $data_produktif = mysqli_fetch_assoc($query_produktif);
 $total_ayam_produktif = $data_produktif['total_produktif'] ?? 0;
 
 
+
+
 // 3. LOGIKA FILTER UNTUK QUERY TABEL RIWAYAT
 $where_riwayat = "";
 if ($status_filter == 'produktif') {
@@ -37,9 +39,11 @@ if ($status_filter == 'produktif') {
 $query_riwayat = mysqli_query($conn, "
     SELECT 
         id_blok_kandang,
+        nama_blok,
         total_ayam,
         kapasitas_per_blok,
-        tanggal_pembelian_ayam
+        tanggal_pembelian_ayam,
+        keterangan
     FROM blok_kandang
     $where_riwayat
     ORDER BY id_blok_kandang ASC
@@ -265,6 +269,7 @@ if (!$query_riwayat) {
                             <th>Populasi</th>
                             <th>Umur (Minggu)</th>
                             <th>Status</th>
+                            <th>Keterangan</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -285,7 +290,14 @@ if (!$query_riwayat) {
                                 }
                         ?>
                                 <tr>
-                                    <td><strong>Blok <?php echo $row['id_blok_kandang']; ?></strong></td>
+                                    <td><strong>Blok 
+                                        <?php 
+                                            if (!empty($row['nama_blok'])) {
+                                                echo $row['nama_blok'];
+                                            } else {
+                                                echo $row['id_blok_kandang'];
+                                            }
+                                            ?></strong></td>
                                     <td><strong><?php echo number_format($row['total_ayam']); ?></strong> ekor</td>
                                     <td><?php echo $total_umur_minggu; ?> Minggu</td>
                                     <td>
@@ -293,6 +305,7 @@ if (!$query_riwayat) {
                                             <?php echo $status; ?>
                                         </span>
                                     </td>
+                                    <td><?php echo htmlspecialchars($row['keterangan'] ?? 'Normal'); ?></td>
                                     <td>
                                         <a href="hapus_blok.php?id=<?php echo $row['id_blok_kandang']; ?>" 
                                            class="btn-aksi btn-hapus" 
@@ -301,7 +314,7 @@ if (!$query_riwayat) {
                                 </tr>
                         <?php } 
                         } else { ?>
-                            <tr><td colspan="5" style="text-align: center;">Tidak ada data blok dengan status ini.</td></tr>
+                            <tr><td colspan="6" style="text-align: center;">Tidak ada data blok dengan status ini.</td></tr>
                         <?php } ?>
                     </tbody>
                 </table>
