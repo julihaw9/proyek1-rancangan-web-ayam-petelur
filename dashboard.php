@@ -12,6 +12,9 @@ $q_ayam = mysqli_query($conn, "SELECT SUM(total_ayam) as total FROM blok_kandang
 $d_ayam = mysqli_fetch_assoc($q_ayam);
 $total_ayam = $d_ayam['total'] ?? 0;
 
+$q_user = mysqli_query($conn, "SELECT * FROM petugas WHERE id_petugas = '".$_SESSION['id_petugas']."'");
+$d_user = mysqli_fetch_assoc($q_user);
+
 $q_telur = mysqli_query($conn, "SELECT SUM(total_telur) as total FROM produksi_telur WHERE tanggal = CURDATE()");
 $d_telur = mysqli_fetch_assoc($q_telur);
 $total_telur = $d_telur['total'] ?? 0;
@@ -75,6 +78,7 @@ $profits_json = json_encode($profits);
 
         <main>
             <h1>Dashboard</h1>
+            <p>Selamat datang, <?php echo $d_user['nama_petugas']; ?> ! <br>Berikut adalah ringkasan informasi terkini mengenai kondisi peternakan Anda.</p>
             <div class="card-container">
                 <div class="card">
                     <p>Total ayam</p>

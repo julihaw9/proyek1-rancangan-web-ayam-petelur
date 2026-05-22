@@ -171,7 +171,6 @@ if (!$query_transaksi) {
                 
             </div>
 
-        
             
             <div class="card-container">
                 <div class="card">
