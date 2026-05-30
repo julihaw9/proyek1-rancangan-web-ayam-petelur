@@ -191,12 +191,10 @@ mysqli_query($conn, $sql_cleanup_2);
         .card h2.hijau { color: #28a745; }
         .card h2.merah { color: #dc3545; }
 
-        /* ======================================================= */
-        /* PERBAIKAN: GAYA TOMBOL KAPSUL RAPAT (SAMA SEPERTI INVENTORI) */
-        /* ======================================================= */
+        /* Gaya Tombol Kapsul Radio Kustom */
         .radio-tile-group {
-            display: inline-flex; /* Membuat kontainer hanya selebar isinya */
-            gap: 10px;            /* Jarak antar tombol kapsul */
+            display: inline-flex; 
+            gap: 10px;            
         }
 
         .radio-wrapper {
@@ -215,7 +213,7 @@ mysqli_query($conn, $sql_cleanup_2);
 
         .radio-label {
             display: block;
-            padding: 10px 20px; /* Padding sisi kiri & kanan konstan */
+            padding: 10px 20px; 
             background: #e5e7eb;
             color: #4b5563;
             border-radius: 8px;
@@ -226,14 +224,12 @@ mysqli_query($conn, $sql_cleanup_2);
             white-space: nowrap;
         }
 
-        /* Warna saat aktif (Oranye Prima Farm) */
         .radio-wrapper input[type="radio"]:checked + .radio-label {
             background-color: #f0861c;
             color: white;
             box-shadow: 0 2px 4px rgba(240, 134, 28, 0.2);
         }
 
-        /* Efek hover opsi tidak aktif */
         .radio-wrapper input[type="radio"]:hover:not(:checked) + .radio-label {
             background-color: #d1d5db;
         }
@@ -304,7 +300,7 @@ mysqli_query($conn, $sql_cleanup_2);
                                         Vaksinasi <strong>Blok <?= $j['id_blok_kandang']; ?></strong> &bull; Rencana: <strong><?= date('d M Y', strtotime($j['jadwal'])); ?></strong>
                                     </span>
                                 </div>
-                                <a href="proses_selesai.php?id=<?= $j['id_jadwal_vaksinasi']; ?>" class="btn-tabel sls">Tandai Selesai</a>
+                                <a href="proses_selesai.php?id=<?= $j['id_jadwal_vaksinasi']; ?>&status_filter=<?= $status_filter ?>" class="btn-tabel sls">Tandai Selesai</a>
                             </div>
                             <?php
                         endif;
@@ -399,10 +395,10 @@ mysqli_query($conn, $sql_cleanup_2);
                                         <?php if ($row['status'] == 0): ?>
                                             <div class="btn-aksi-group">
                                                 <a class="btn-tabel batalkan"
-                                                   href="proses_batalkan.php?id=<?= $row['id_jadwal_vaksinasi']; ?>"
+                                                   href="proses_batalkan.php?id=<?= $row['id_jadwal_vaksinasi']; ?>&status_filter=<?= $status_filter ?>"
                                                    onclick="return confirm('Batalkan jadwal ini?')">Hapus</a>
                                                 <a class="btn-tabel sls"
-                                                   href="proses_selesai.php?id=<?= $row['id_jadwal_vaksinasi']; ?>"
+                                                   href="proses_selesai.php?id=<?= $row['id_jadwal_vaksinasi']; ?>&status_filter=<?= $status_filter ?>"
                                                    onclick="return confirm('Tandai jadwal ini sebagai SELESAI?')">Selesai</a>
                                             </div>
                                         <?php else: ?>

@@ -1,0 +1,200 @@
+/* === Penyesuaian Integrasi Filter ke baris Card === */
+.card-container {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.card,
+.filter-card-custom {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    min-width: 240px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.filter-card-custom {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Desain Kustom Radio Button agar Selaras dengan Tema Oranye */
+.radio-tile-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.radio-wrapper {
+    position: relative;
+}
+
+.radio-wrapper input[type="radio"] {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    margin: 0;
+}
+
+.radio-label {
+    display: inline-block;
+    padding: 10px 16px;
+    background: #f3f4f6;
+    color: #4b5563;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    border: 1.5px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.radio-wrapper input[type="radio"]:checked+.radio-label {
+    background-color: #f0861c;
+    color: white;
+    box-shadow: 0 4px 6px rgba(240, 134, 28, 0.2);
+}
+
+.radio-wrapper input[type="radio"]:hover:not(:checked)+.radio-label {
+    background-color: #e5e7eb;
+}
+
+/* === Gaya Pencarian Riwayat === */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.search-form {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+    max-width: 950px;
+}
+
+.input-cari {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+.btn-cari {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    margin-left: 10px;
+    margin-right: 10px;
+    text-decoration: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.btn-cari:hover {
+    background-color: #0056b3;
+}
+
+.btn-reset {
+    padding: 10px 15px;
+    background-color: #6c757d;
+    color: white;
+    margin-right: 10px;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================================================
+   PEMBERSIH INLINE STYLE (PINDAHAN DARI ATRIBUT STYLE DI PHP)
+   ========================================================================== */
+
+/* Tombol Koreksi Global */
+.btn-koreksi-kustom {
+    background-color: #e0a800 !important;
+}
+
+/* Pengaturan Khusus Card Total Stok */
+.card-stok-spesial {
+    border-left: 5px solid #e0a800;
+}
+
+.card-title-sub {
+    margin: 0; 
+    font-size: 16px; 
+    color: #333;
+}
+
+.card-title-sub small {
+    color: #777;
+}
+
+.card-value-stok {
+    margin: 15px 0 5px 0; 
+    color: #e0a800;
+}
+
+.card-note-stok {
+    font-weight: bold; 
+    color: #888; 
+    font-size: 12px;
+}
+
+/* Pengaturan Khusus Card Standar (Produksi & Terjual) */
+.card-title-default {
+    margin: 0; 
+    font-size: 16px; 
+    color: #666;
+}
+
+.card-value-default {
+    margin: 15px 0 5px 0;
+}
+
+.card-unit {
+    font-weight: bold; 
+    color: #888;
+}
+
+/* Judul komponen Filter */
+.filter-title {
+    margin: 0 0 10px 0; 
+    font-size: 16px; 
+    font-weight: bold; 
+    color: #111;
+}
+
+/* Pengaturan Baris dan Kolom Tabel */
+.td-tanggal {
+    text-align: center;
+}
+
+.td-bold {
+    font-weight: bold;
+}
+
+.td-empty {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+}

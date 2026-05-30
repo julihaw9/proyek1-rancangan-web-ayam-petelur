@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("koneksi.php"); // Pastikan file koneksi.php sudah benar
+include("koneksi.php");
 
 if (!isset($_SESSION['login'])) {
     header("Location: index.php");
@@ -8,14 +8,12 @@ if (!isset($_SESSION['login'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ambil dan amankan input
     $nama_blok   = mysqli_real_escape_string($conn, $_POST['nama_blok']);
     $total_ayam    = mysqli_real_escape_string($conn, $_POST['jumlah_ayam']);
     $tanggal_beli  = mysqli_real_escape_string($conn, $_POST['tanggal_pembelian']);
-    $kapasitas     = 42; // Sesuai data di screenshot kamu rata-rata 42
+    $kapasitas     = 42; 
     $id_petugas    = $_SESSION['id_petugas'] ?? 1235;
 
-    // Query Insert ke tabel blok_kandang
     $sql = "INSERT INTO blok_kandang (id_petugas, nama_blok, kapasitas_per_blok, total_ayam, tanggal_pembelian_ayam) 
             VALUES ('$id_petugas', '$nama_blok', '$kapasitas', '$total_ayam', '$tanggal_beli')";
 
@@ -67,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="action-buttons">
-                <a href="menu_inventori.php" class="btn btn-batal" style="display: flex; justify-content: center; align-items: center; text-decoration: none;">Batal</a>
+                <a href="menu_inventori.php" class="btn btn-batal">Batal</a>
                 <button type="submit" name="simpan" class="btn btn-simpan">Simpan Data</button>
             </div>
 

@@ -2,35 +2,50 @@
 session_start();
 include("koneksi.php");
 
-// Proteksi login
 if (!isset($_SESSION['login'])) {
     header("Location: index.php");
     exit;
 }
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // Ambil data dari form
     $tanggal     = mysqli_real_escape_string($conn, $_POST['tanggal']);
     $total_telur = mysqli_real_escape_string($conn, $_POST['total_telur']);
-    
-    if (isset($_SESSION['id_petugas'])) {
-        $id_petugas = $_SESSION['id_petugas'];
-    } else {
-        $id_petugas = 1;
-    }
+    $id_petugas  = $_SESSION['id_petugas'] ?? 1;
 
-    $query_produksi = "INSERT INTO produksi_telur (id_petugas, tanggal, total_telur) 
-                       VALUES ('$id_petugas', '$tanggal', '$total_telur')";
-    
-    if (mysqli_query($conn, $query_produksi)) {
+    mysqli_begin_transaction($conn);
+
+    try {
+        $query_produksi = "INSERT INTO produksi_telur (id_petugas, tanggal, total_telur) 
+                           VALUES ('$id_petugas', '$tanggal', '$total_telur')";
+        mysqli_query($conn, $query_produksi);
+        
+        $query_rekap = "INSERT INTO rekap_produksi_telur (tanggal, total_telur_harian, jumlah_inputan) 
+                        VALUES ('$tanggal', '$total_telur', 1)
+                        ON DUPLICATE KEY UPDATE 
+                            total_telur_harian = total_telur_harian + VALUES(total_telur_harian),
+                            jumlah_inputan = jumlah_inputan + 1";
+        mysqli_query($conn, $query_rekap);
+        
+        $keterangan_stok = "Penambahan otomatis dari input produksi tanggal " . $tanggal;
+        $query_stok = "UPDATE stok_gudang 
+                       SET total_stok_telur = total_stok_telur + '$total_telur',
+                           keterangan_update = '$keterangan_stok'
+                       WHERE id = 1";
+        mysqli_query($conn, $query_stok);
+
+        mysqli_commit($conn);
+
         echo "<script>
-                alert('Data Produksi Telur Berhasil Disimpan!'); 
+                alert('Data Produksi Berhasil Disimpan dan Stok Gudang Telah Diperbarui!'); 
                 window.location='menu_produksi.php';
               </script>";
-    } else {
-        echo "Error Produksi: " . mysqli_error($conn);
+
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        echo "<script>
+                alert('Gagal menyimpan data! Terjadi kesalahan pada sistem database.'); 
+                window.location='menu_produksi.php';
+              </script>";
     }
 }
 ?>
@@ -52,16 +67,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <div class="form-group">
                 <label for="tanggal">Tanggal Pengambilan</label>
-                <input type="date" id="tanggal" name="tanggal" required value="<?= date('Y-m-d') ?>">
+                <div class="input-wrapper">
+                    <input type="date" id="tanggal" name="tanggal" required value="<?= date('Y-m-d') ?>">
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="total_telur">Total Telur (Kg)</label>
-                <input type="number" id="total_telur" name="total_telur" placeholder="Contoh: 1500" step="0.1" required>
+                <div class="input-wrapper">
+                    <input type="number" id="total_telur" name="total_telur" placeholder="Contoh: 150.5" step="0.1" required>
+                </div>
             </div>
 
             <div class="action-buttons">
-                <button type="button" class="btn btn-batal" onclick="window.location.href='menu_produksi.php';">Batal</button>
+                <a href="menu_produksi.php" class="btn btn-batal">Batal</a>
                 <button type="submit" class="btn btn-simpan">Simpan Data</button>
             </div>
 

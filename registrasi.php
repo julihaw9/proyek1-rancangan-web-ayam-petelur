@@ -4,7 +4,7 @@ include ("koneksi.php");
 if (isset($_POST['register'])) {
     $nama = mysqli_real_escape_string($conn, $_POST['nama']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password']; // Sebaiknya gunakan password_hash() untuk keamanan
+    $password = $_POST['password']; 
 
     $cek_email = mysqli_query($conn, "SELECT * FROM petugas WHERE email='$email'");
     
@@ -35,32 +35,38 @@ if (isset($_POST['register'])) {
 </head>
 <body>
 
-    <div class="login-container">
+    <div class="modal-card">
         <h2>REGISTRASI</h2>
 
-        <form class="form-group" action="registrasi.php" method="POST">
+        <form action="registrasi.php" method="POST">
 
-            <label for="nama">Nama Lengkap</label>
-            <div class="input-wrapper">
-                <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
+            <div class="form-group">
+                <label for="nama">Nama Lengkap</label>
+                <div class="input-wrapper">
+                    <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
+                </div>
             </div>
 
-            <label for="email">Email</label>
-            <div class="input-wrapper">
-                <input type="email" id="email" name="email" placeholder="Masukkan email" required>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" name="email" placeholder="Masukkan email" required>
+                </div>
             </div>
 
-            <label for="password">Password</label>
-            <div class="input-wrapper">
-                <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+                </div>
             </div>
 
             <div class="action-buttons">
                 <button type="submit" class="btn btn-simpan" name="register">Daftar</button>
             </div>
             
-            <p style="text-align: center; margin-top: 10px; text-decoration: none;">
-                Sudah punya akun? <a href="index.php" style="text-decoration: none; color: blue;">Login di sini</a>
+            <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #64748b;">
+                Sudah punya akun? <a href="index.php" style="text-decoration: none; color: #f0861c; font-weight: bold;">Login di sini</a>
             </p>
 
         </form>

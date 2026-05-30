@@ -8,26 +8,26 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
-// Cek apakah parameter ID ada di URL
-// if (!isset($_GET['id']) || empty($_GET['id'])) {
-//     echo "<script>
-//             alert('ID data tidak ditemukan!'); 
-//             window.location='menu_produksi.php';
-//           </script>";
-//     exit;
-// }
+// Cek apakah parameter TANGGAL ada di URL (Sesuai strategi rekap harian)
+if (!isset($_GET['tanggal']) || empty($_GET['tanggal'])) {
+    echo "<script>
+            alert('Tanggal data tidak ditemukan!'); 
+            window.location='menu_produksi.php';
+          </script>";
+    exit;
+}
 
-// $id_produksi = mysqli_real_escape_string($conn, $_GET['id']);
+$tanggal_url = mysqli_real_escape_string($conn, $_GET['tanggal']);
 
-// Ambil data lama berdasarkan ID untuk ditampilkan di form
-$query_ambil = "SELECT * FROM produksi WHERE id_produksi = '$id_produksi'";
+// Ambil data lama dari tabel REKAP berdasarkan TANGGAL untuk ditampilkan di form
+$query_ambil = "SELECT * FROM rekap_produksi_telur WHERE tanggal = '$tanggal_url'";
 $result = mysqli_query($conn, $query_ambil);
 $data = mysqli_fetch_assoc($result);
 
-// Jika data tidak ditemukan di database
+// Jika data rekap tanggal tersebut tidak ditemukan di database
 if (!$data) {
     echo "<script>
-            alert('Data tidak ditemukan dalam database!'); 
+            alert('Data rekap untuk tanggal tersebut tidak ditemukan!'); 
             window.location='menu_produksi.php';
           </script>";
     exit;
@@ -37,21 +37,20 @@ if (!$data) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Ambil data dari form
-    $tanggal     = mysqli_real_escape_string($conn, $_POST['tanggal']);
-    $total_telur = mysqli_real_escape_string($conn, $_POST['total_telur']);
-    $keterangan  = mysqli_real_escape_string($conn, $_POST['keterangan']); // Tambahan catatan alasan update
+    $tanggal_baru      = mysqli_real_escape_string($conn, $_POST['tanggal']);
+    $total_telur_baru  = mysqli_real_escape_string($conn, $_POST['total_telur']);
+    $keterangan        = mysqli_real_escape_string($conn, $_POST['keterangan']); 
     
-    // Query Update Data
-    // Catatan: Pastikan nama kolom 'id_produksi' sesuai dengan primary key di tabel produksi Anda
-    $query_update = "UPDATE produksi SET 
-                        tanggal = '$tanggal', 
-                        total_telur = '$total_telur',
+    // Query Update Data ke tabel rekapitasi
+    $query_update = "UPDATE rekap_produksi_telur SET 
+                        tanggal = '$tanggal_baru', 
+                        total_telur_harian = '$total_telur_baru',
                         keterangan = '$keterangan' 
-                     WHERE id_produksi = '$id_produksi'";
+                     WHERE tanggal = '$tanggal_url'";
     
     if (mysqli_query($conn, $query_update)) {
         echo "<script>
-                alert('Data Produksi Telur Berhasil Diperbarui!'); 
+                alert('Rekap Produksi Telur Berhasil Diperbarui!'); 
                 window.location='menu_produksi.php';
               </script>";
     } else {
@@ -71,29 +70,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
     <div class="modal-card">
-        <h2>Update / Koreksi Produksi Telur</h2>
+        <h2>Update / Koreksi Total Produksi Telur</h2>
         <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
-            Silakan ubah jumlah total telur jika terdapat telur pecah atau selisih data.
+            Silakan ubah total akumulasi telur pada tanggal ini jika terdapat selisih data atau koreksi global.
         </p>
 
         <form id="formUpdateProduksi" action="" method="POST">
             
             <div class="form-group">
-                <label for="tanggal">Tanggal Pengambilan</label>
-                <!-- Menampilkan tanggal yang sebelumnya tersimpan -->
-                <input type="date" id="tanggal" name="tanggal" required value="<?= $data['tanggal'] ?>">
+                <label for="tanggal">Tanggal Produksi</label>
+                <input type="date" id="tanggal" name="tanggal" required value="<?= htmlspecialchars($data['tanggal'] ?? '') ?>">
             </div>
 
             <div class="form-group">
-                <label for="total_telur">Total Telur Baru (Kg)</label>
-                <!-- Menampilkan total telur yang sebelumnya tersimpan -->
-                <input type="number" id="total_telur" name="total_telur" placeholder="Contoh: 1450" step="0.1" required value="<?= $data['total_telur'] ?>">
+                <label for="total_telur">Total Telur Harian Baru (Kg)</label>
+                <input type="number" id="total_telur" name="total_telur" placeholder="Contoh: 1450" step="0.01" required value="<?= htmlspecialchars($data['total_telur_harian'] ?? '0') ?>">
             </div>
 
             <div class="form-group">
-                <label for="keterangan">Alasan Perubahan / Catatan</label>
-                <!-- Input tambahan untuk mencatat alasan (misal: "Ada yang pecah 5kg") -->
-                <textarea id="keterangan" name="keterangan" placeholder="Contoh: Telur pecah di gudang sebanyak 5 Kg" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"><?= isset($data['keterangan']) ? $data['keterangan'] : '' ?></textarea>
+                <label for="keterangan">Alasan Perubahan / Catatan Rekap</label>
+                <textarea id="keterangan" name="keterangan" placeholder="Contoh: Penyesuaian total karena ada telur pecah harian" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"><?= htmlspecialchars($data['keterangan'] ?? '') ?></textarea>
             </div>
 
             <div class="action-buttons">

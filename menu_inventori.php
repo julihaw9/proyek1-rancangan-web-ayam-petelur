@@ -117,6 +117,7 @@ if (!$query_riwayat) {
 
         /* === Penyesuaian Komponen Card dan Filter === */
         .card-container {
+            width: 100%;
             display: flex;
             gap: 20px;
             margin: 20px 0;

@@ -8,68 +8,77 @@ if (!isset($_SESSION['login'])) {
 }
 
 if (isset($_POST['simpan'])) {
-    // 1. Ambil input dari form
     $tanggal_input = mysqli_real_escape_string($conn, $_POST['tanggal']);
-    $jumlah_jual = mysqli_real_escape_string($conn, $_POST['jumlah_telur']);
-    $keterangan = mysqli_real_escape_string($conn, $_POST['keterangan']);
-    $total_uang = mysqli_real_escape_string($conn, $_POST['total_uang']);
+    $jumlah_jual   = mysqli_real_escape_string($conn, $_POST['jumlah_telur']);
+    $keterangan    = mysqli_real_escape_string($conn, $_POST['keterangan']);
+    $total_uang    = mysqli_real_escape_string($conn, $_POST['total_uang']);
+    $id_petugas    = $_SESSION['id_petugas'] ?? 1;
 
-    // 2. Cari data produksi terakhir untuk mengambil stok telur saat ini
-    $query_cari_id = "SELECT id_produksi, total_telur FROM produksi_telur ORDER BY id_produksi DESC LIMIT 1";
-    $result_id = mysqli_query($conn, $query_cari_id);
-    $data_produksi = mysqli_fetch_assoc($result_id);
+    $query_cek_stok = "SELECT total_stok_telur FROM stok_gudang WHERE id = 1";
+    $result_stok = mysqli_query($conn, $query_cek_stok);
+    $data_stok = mysqli_fetch_assoc($result_stok);
+    $stok_gudang_sekarang = $data_stok['total_stok_telur'] ?? 0;
 
-    if (!$data_produksi) {
-        echo "<script>alert('Gagal: Tidak ada data di tabel produksi_telur!'); window.history.back();</script>";
+    if ($jumlah_jual > $stok_gudang_sekarang) {
+        echo "<script>
+                alert('Gagal: Stok di gudang tidak cukup! Stok saat ini: " . number_format($stok_gudang_sekarang, 1) . " Kg'); 
+                window.history.back();
+              </script>";
         exit;
     }
 
-    $id_produksi_otomatis = $data_produksi['id_produksi'];
-    $stok_sekarang = $data_produksi['total_telur'];
-    $id_petugas = $_SESSION['id_petugas'] ?? 1;
+    mysqli_begin_transaction($conn);
 
-    // 3. Simpan ke tabel TRANSAKSI (Induk) dulu
-    $query_transaksi = "INSERT INTO transaksi (id_petugas, tanggal_transaksi, jenis_transaksi) 
-                        VALUES ('$id_petugas', '$tanggal_input', 'Pemasukan')";
-
-    if (mysqli_query($conn, $query_transaksi)) {
-        // Ambil ID yang baru saja digenerate oleh tabel transaksi
+    try {
+        $query_transaksi = "INSERT INTO transaksi (id_petugas, tanggal_transaksi, jenis_transaksi) 
+                            VALUES ('$id_petugas', '$tanggal_input', 'Pemasukan')";
+        mysqli_query($conn, $query_transaksi);
+        
         $id_transaksi_baru = mysqli_insert_id($conn);
 
-        // 4. Simpan ke tabel TELUR_TERJUAL (Anak) menggunakan ID transaksi tadi
         $query_jumlah_jual = "INSERT INTO telur_terjual (id_transaksi, jumlah_telur, keterangan, total_uang) 
-                             VALUES ('$id_transaksi_baru', '$jumlah_jual', '$keterangan', '$total_uang')";
+                              VALUES ('$id_transaksi_baru', '$jumlah_jual', '$keterangan', '$total_uang')";
+        mysqli_query($conn, $query_jumlah_jual);
         
-        // 5. Update stok di PRODUKSI_TELUR (Kurangi stok)
-        $sisa_stok = $stok_sekarang - $jumlah_jual;
-        $query_update_stok = "UPDATE produksi_telur SET total_telur = '$sisa_stok' WHERE id_produksi = '$id_produksi_otomatis'";
+        $keterangan_stok = "Pengurangan otomatis dari penjualan tanggal " . $tanggal_input;
+        $query_update_gudang = "UPDATE stok_gudang 
+                                SET total_stok_telur = total_stok_telur - '$jumlah_jual',
+                                    keterangan_update = '$keterangan_stok'
+                                WHERE id = 1";
+        mysqli_query($conn, $query_update_gudang);
 
-        // Eksekusi simpan ke telur_terjual dan update stok
-        if (mysqli_query($conn, $query_jumlah_jual) && mysqli_query($conn, $query_update_stok)) {
-            echo "<script>
-                    alert('Data Penjualan Berhasil Disimpan!'); 
-                    window.location='menu_transaksi.php';
-                  </script>";
-            exit();
-        } else {
-            echo "<script>alert('Gagal simpan detail: " . mysqli_error($conn) . "');</script>";
-        }
-    } else {
-        echo "<script>alert('Gagal simpan transaksi: " . mysqli_error($conn) . "');</script>";
+        $query_rekap = "INSERT INTO rekap_produksi_telur (tanggal, total_telur_harian, jumlah_inputan) 
+                        VALUES ('$tanggal_input', -'$jumlah_jual', 1)
+                        ON DUPLICATE KEY UPDATE 
+                            total_telur_harian = total_telur_harian - VALUES(total_telur_harian)";
+        mysqli_query($conn, $query_rekap);
+
+        mysqli_commit($conn);
+
+        echo "<script>
+                alert('Data Penjualan Berhasil Disimpan dan Stok Gudang Berhasil Dikurangi!'); 
+                window.location='menu_transaksi.php';
+              </script>";
+        exit();
+
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        echo "<script>
+                alert('Gagal menyimpan transaksi penjualan telur.'); 
+                window.location='menu_transaksi.php';
+              </script>";
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catat Penjualan Telur</title>
     <link rel="stylesheet" href="form.css">
 </head>
-
 <body>
 
     <div class="modal-card">
@@ -87,8 +96,7 @@ if (isset($_POST['simpan'])) {
             <div class="form-group">
                 <label for="jumlah_telur">Jumlah Telur Terjual (kg)</label>
                 <div class="input-wrapper">
-                    <input type="number" id="jumlah_telur" name="jumlah_telur" placeholder="Contoh: 10" step="0.1"
-                        required>
+                    <input type="number" id="jumlah_telur" name="jumlah_telur" placeholder="Contoh: 10" step="0.1" required>
                 </div>
             </div>
 
@@ -107,8 +115,7 @@ if (isset($_POST['simpan'])) {
             </div>
 
             <div class="action-buttons">
-                <a href="menu_transaksi.php" class="btn btn-batal"
-                    style="text-decoration:none; display:flex; align-items:center; justify-content:center;">Batal</a>
+                <a href="menu_transaksi.php" class="btn btn-batal">Batal</a>
                 <button type="submit" name="simpan" class="btn btn-simpan">Simpan Penjualan</button>
             </div>
 
@@ -116,5 +123,4 @@ if (isset($_POST['simpan'])) {
     </div>
 
 </body>
-
 </html>
