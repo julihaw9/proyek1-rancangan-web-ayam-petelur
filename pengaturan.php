@@ -26,16 +26,27 @@ if (isset($_POST['update_profil'])) {
     }
 }
 
-// 3. Update Password
+// 3. Update Password (Sudah mendukung MD5)
 if (isset($_POST['update_password'])) {
-    $pw_lama = $_POST['pw_lama'];
-    $pw_baru = $_POST['pw_baru'];
+    // Mengubah password lama dari input menjadi MD5 untuk pencocokan data
+    $pw_lama = md5($_POST['pw_lama']);
+    // Mengubah password baru menjadi MD5 sebelum disimpan ke database
+    $pw_baru = md5($_POST['pw_baru']);
 
+    // Membandingkan md5 password lama dengan md5 yang ada di database
     if ($pw_lama == $data['password']) {
-        $update_pw = mysqli_query($conn, "UPDATE petugas SET password = '$pw_baru' WHERE id_petugas = '$id_petugas'");
-        if ($update_pw) {
+        if ($pw_baru == $data['password']) {
+            echo "<script>alert('Password baru tidak boleh sama dengan password lama!');</script>";
+
+        } else {
+            $update_pw = mysqli_query($conn, "UPDATE petugas SET password = '$pw_baru' WHERE id_petugas = '$id_petugas'");
+            if ($update_pw) {
             echo "<script>alert('Password berhasil diubah!'); window.location='pengaturan.php';</script>";
+            } else {
+                echo "<script>alert('Gagal mengubah password!');</script>";
+            }
         }
+        
     } else {
         echo "<script>alert('Password lama salah!');</script>";
     }
