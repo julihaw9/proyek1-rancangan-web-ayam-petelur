@@ -145,7 +145,7 @@ $produksi_json = json_encode($produksi_bulanan);
                 <div class="card">
                     <p>Vaksinasi Mendatang</p>
                     <h2 class="card-number biru"><?= $total_vaksin_mendatang; ?></h2>
-                    <span style="font-size: 12px; color: #888;">Jadwal hari ini & besok</span>
+                    <span style="font-size: 12px; color: #888;">Jadwal mendatang</span>
                 </div>
             </div>
 
