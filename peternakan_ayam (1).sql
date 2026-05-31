@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 07, 2026 at 01:43 AM
+-- Generation Time: May 31, 2026 at 08:20 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -30,22 +30,27 @@ SET time_zone = "+00:00";
 CREATE TABLE `blok_kandang` (
   `id_blok_kandang` int NOT NULL,
   `id_petugas` int DEFAULT NULL,
+  `nama_blok` varchar(100) DEFAULT NULL,
   `kapasitas_per_blok` int DEFAULT NULL,
   `total_ayam` int DEFAULT NULL,
-  `tanggal_pembelian_ayam` date DEFAULT NULL
+  `tanggal_pembelian_ayam` date DEFAULT NULL,
+  `keterangan` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `blok_kandang`
 --
 
-INSERT INTO `blok_kandang` (`id_blok_kandang`, `id_petugas`, `kapasitas_per_blok`, `total_ayam`, `tanggal_pembelian_ayam`) VALUES
-(1, 1, 42, 40, '2026-01-10'),
-(2, 1, 42, 40, '2026-01-12'),
-(3, 1, 42, 42, '2026-02-01'),
-(4, 1, 42, 42, '2026-02-15'),
-(5, 1, 42, 42, '2026-03-01'),
-(6, 3, 42, 40, '2024-06-06');
+INSERT INTO `blok_kandang` (`id_blok_kandang`, `id_petugas`, `nama_blok`, `kapasitas_per_blok`, `total_ayam`, `tanggal_pembelian_ayam`, `keterangan`) VALUES
+(1, NULL, NULL, 42, 40, '2026-01-10', NULL),
+(2, NULL, NULL, 42, 40, '2026-01-12', NULL),
+(3, NULL, NULL, 42, 42, '2026-02-01', NULL),
+(4, NULL, '', 42, 42, '2026-02-15', 'pembersihan'),
+(5, NULL, '', 42, 50, '2026-03-01', 'beli baru'),
+(6, NULL, 'afkir', 42, 0, '2024-06-06', 'jual'),
+(7, NULL, 'Blok A', 42, 42, '2026-05-22', NULL),
+(8, NULL, 'Blok 7', 42, 0, '2026-05-22', 'Flu burung'),
+(10, NULL, 'Blok C', 42, 42, '2026-05-30', NULL);
 
 -- --------------------------------------------------------
 
@@ -67,11 +72,15 @@ CREATE TABLE `jadwal_vaksinasi` (
 --
 
 INSERT INTO `jadwal_vaksinasi` (`id_jadwal_vaksinasi`, `id_blok_kandang`, `jadwal`, `status`, `keterangan`, `tgl_selesai`) VALUES
-(3, 3, '2026-05-10', 0, 'Jadwal Vaksin Gumboro', NULL),
+(3, 3, '2026-05-10', 1, 'Jadwal Vaksin Gumboro', '2026-05-21'),
 (4, 4, '2026-05-12', 0, 'Jadwal Vaksin AI Rutin', NULL),
 (8, 1, '2026-05-13', 0, 'vaksin AQ', NULL),
 (9, 2, '2026-05-13', 0, 'vaksin AQ', NULL),
-(10, 3, '2026-05-13', 0, 'vaksin AQ', NULL);
+(10, 3, '2026-05-13', 0, 'vaksin AQ', NULL),
+(12, 2, '2026-05-20', 0, 'vaksin', NULL),
+(18, 1, '2026-05-22', 0, 'vaksin', NULL),
+(19, 1, '2026-06-04', 0, 'vaksin flu', NULL),
+(20, 2, '2026-06-04', 0, 'vaksin flu', NULL);
 
 -- --------------------------------------------------------
 
@@ -108,7 +117,9 @@ INSERT INTO `pemasukan_ayam` (`id_pemasukan_ayam`, `id_transaksi`, `id_blok_kand
 (18, 25, 1, 2, 'afkir', 70000.00),
 (19, 27, 1, 2, 'afkir', 70000.00),
 (20, 28, 2, 2, 'afkir', 69997.00),
-(21, 30, 6, 2, 'jual ke warung', 133999.00);
+(21, 30, 6, 2, 'jual ke warung', 133999.00),
+(22, 34, 6, 40, 'afkir', 2000000.00),
+(23, 35, 1, 2, 'mati', 0.00);
 
 -- --------------------------------------------------------
 
@@ -152,18 +163,21 @@ CREATE TABLE `pengeluaran` (
   `id_pengeluaran` int NOT NULL,
   `id_transaksi` int DEFAULT NULL,
   `keterangan` text,
-  `total_uang` decimal(15,2) DEFAULT NULL
+  `total_uang` decimal(15,2) DEFAULT NULL,
+  `jumlah` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `pengeluaran`
 --
 
-INSERT INTO `pengeluaran` (`id_pengeluaran`, `id_transaksi`, `keterangan`, `total_uang`) VALUES
-(1, 12, 'Beli Pakan Ayam 10 Karung', 2500000.00),
-(2, 12, 'Biaya Listrik dan Air April', 500000.00),
-(3, 12, 'Beli Vitamin dan Suplemen', 350000.00),
-(4, 12, 'Perbaikan Atap Kandang B', 1200000.00);
+INSERT INTO `pengeluaran` (`id_pengeluaran`, `id_transaksi`, `keterangan`, `total_uang`, `jumlah`) VALUES
+(1, 12, 'Beli Pakan Ayam 10 Karung', 2500000.00, 0),
+(2, 12, 'Biaya Listrik dan Air April', 500000.00, 0),
+(3, 12, 'Beli Vitamin dan Suplemen', 350000.00, 0),
+(4, 12, 'Perbaikan Atap Kandang B', 1200000.00, 0),
+(7, 33, 'beli baru', 2940000.00, 42),
+(8, 36, 'beli baru', 3750000.00, 50);
 
 -- --------------------------------------------------------
 
@@ -183,10 +197,7 @@ CREATE TABLE `petugas` (
 --
 
 INSERT INTO `petugas` (`id_petugas`, `email`, `nama_petugas`, `password`) VALUES
-(1, 'pet@gmail.com', 'Uus Antonius', '123'),
-(2, 'petugas@gmail.com', 'Uus Antonius', '123'),
-(3, 'daitriwibowo2007@gmail.com', 'dai', '890'),
-(4, 'risol29@gmail.com', 'juli', '123');
+(5, 'daitriwibowo2007@gmail.com', 'DA\'I TRI WIBOWO', '827ccb0eea8a706c4c34a16891f84e7b');
 
 -- --------------------------------------------------------
 
@@ -198,7 +209,7 @@ CREATE TABLE `produksi_telur` (
   `id_produksi` int NOT NULL,
   `id_petugas` int DEFAULT NULL,
   `tanggal` date DEFAULT NULL,
-  `total_telur` int DEFAULT NULL
+  `total_telur` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -206,10 +217,78 @@ CREATE TABLE `produksi_telur` (
 --
 
 INSERT INTO `produksi_telur` (`id_produksi`, `id_petugas`, `tanggal`, `total_telur`) VALUES
-(1, 1, '2026-04-25', 50),
-(2, 1, '2026-04-26', 48),
-(3, 1, '2026-04-27', 52),
-(6, 1, '2026-04-29', 50);
+(1, NULL, '2026-04-25', 50),
+(2, NULL, '2026-04-26', 48),
+(3, NULL, '2026-04-27', 52),
+(6, NULL, '2026-04-29', 50),
+(9, NULL, '2026-05-21', 56),
+(13, NULL, '2026-05-22', 20.8),
+(14, NULL, '2026-05-22', 40),
+(16, NULL, '2026-05-30', 16),
+(17, NULL, '2026-05-30', 16),
+(18, NULL, '2026-05-30', 15);
+
+--
+-- Triggers `produksi_telur`
+--
+DELIMITER $$
+CREATE TRIGGER `setelah_insert_produksi` AFTER INSERT ON `produksi_telur` FOR EACH ROW BEGIN
+    INSERT INTO rekap_produksi_telur (tanggal, total_telur_harian, jumlah_inputan)
+    VALUES (NEW.tanggal, NEW.total_telur, 1)
+    ON DUPLICATE KEY UPDATE 
+        total_telur_harian = total_telur_harian + NEW.total_telur,
+        jumlah_inputan = jumlah_inputan + 1;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rekap_produksi_telur`
+--
+
+CREATE TABLE `rekap_produksi_telur` (
+  `id_rekap` int NOT NULL,
+  `tanggal` date NOT NULL,
+  `total_telur_harian` decimal(10,2) DEFAULT '0.00',
+  `jumlah_inputan` int DEFAULT '0',
+  `keterangan` text,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `rekap_produksi_telur`
+--
+
+INSERT INTO `rekap_produksi_telur` (`id_rekap`, `tanggal`, `total_telur_harian`, `jumlah_inputan`, `keterangan`, `updated_at`) VALUES
+(1, '2026-04-25', 50.00, 1, NULL, '2026-05-24 13:15:55'),
+(2, '2026-04-26', 48.00, 1, NULL, '2026-05-24 13:15:55'),
+(3, '2026-04-27', 52.00, 1, NULL, '2026-05-24 13:15:55'),
+(4, '2026-04-29', 50.00, 1, NULL, '2026-05-24 13:15:55'),
+(5, '2026-05-21', 56.00, 1, NULL, '2026-05-24 13:15:55'),
+(6, '2026-05-22', 60.80, 2, NULL, '2026-05-24 13:15:55'),
+(7, '2026-05-30', 136.00, 6, NULL, '2026-05-30 05:53:21');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `stok_gudang`
+--
+
+CREATE TABLE `stok_gudang` (
+  `id` int NOT NULL DEFAULT '1',
+  `total_stok_telur` decimal(10,2) DEFAULT '0.00',
+  `keterangan_update` text,
+  `terakhir_diubah` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ;
+
+--
+-- Dumping data for table `stok_gudang`
+--
+
+INSERT INTO `stok_gudang` (`id`, `total_stok_telur`, `keterangan_update`, `terakhir_diubah`) VALUES
+(1, 319.00, 'Pengurangan otomatis dari penjualan tanggal 2026-05-30', '2026-05-30 05:53:21');
 
 -- --------------------------------------------------------
 
@@ -235,7 +314,9 @@ INSERT INTO `telur_terjual` (`id_jual`, `id_transaksi`, `jumlah_telur`, `waktu_i
 (5, 11, 10, '2026-04-29 14:54:42', 'Penjualan eceran warga sekitar', 160000),
 (6, 11, 25, '2026-04-29 14:54:42', 'Pesanan warung makan Berkah', 400000),
 (7, 23, 10, '2026-04-29 21:50:24', 'agen a', 250000),
-(8, 29, 340, '2026-05-07 01:15:38', 'toko dai', 400000);
+(8, 29, 340, '2026-05-07 01:15:38', 'toko dai', 400000),
+(9, 37, 60, '2026-05-30 05:49:03', 'jual ke agen C', 1680000),
+(10, 38, 10, '2026-05-30 05:53:21', 'jual ke agen C', 280000);
 
 -- --------------------------------------------------------
 
@@ -255,24 +336,30 @@ CREATE TABLE `transaksi` (
 --
 
 INSERT INTO `transaksi` (`id_transaksi`, `id_petugas`, `tanggal_transaksi`, `jenis_transaksi`) VALUES
-(11, 1, '2026-04-01', 'pemasukan'),
-(12, 1, '2026-04-05', 'pengeluaran'),
-(14, 1, '2026-03-18', 'pemasukan'),
-(15, 1, '2026-04-29', 'pemasukan'),
-(16, 1, '2026-04-29', 'pemasukan'),
-(17, 1, '2026-04-29', 'pemasukan'),
-(18, 1, '2026-04-29', 'pemasukan'),
-(20, 1, '2026-04-29', 'pemasukan'),
-(21, 1, '2026-04-29', 'pemasukan'),
-(22, 1, '2026-04-29', 'pemasukan'),
-(23, 1, '2026-04-29', 'pemasukan'),
-(24, 1, '2026-04-30', 'pemasukan'),
-(25, 3, '2026-05-06', 'pemasukan'),
-(26, 3, '2026-05-06', 'pemasukan'),
-(27, 3, '2026-05-06', 'pemasukan'),
-(28, 3, '2026-05-06', 'pemasukan'),
-(29, 3, '2026-05-07', 'pemasukan'),
-(30, 3, '2026-05-07', 'pemasukan');
+(11, NULL, '2026-04-01', 'pemasukan'),
+(12, NULL, '2026-04-05', 'pengeluaran'),
+(14, NULL, '2026-03-18', 'pemasukan'),
+(15, NULL, '2026-04-29', 'pemasukan'),
+(16, NULL, '2026-04-29', 'pemasukan'),
+(17, NULL, '2026-04-29', 'pemasukan'),
+(18, NULL, '2026-04-29', 'pemasukan'),
+(20, NULL, '2026-04-29', 'pemasukan'),
+(21, NULL, '2026-04-29', 'pemasukan'),
+(22, NULL, '2026-04-29', 'pemasukan'),
+(23, NULL, '2026-04-29', 'pemasukan'),
+(24, NULL, '2026-04-30', 'pemasukan'),
+(25, NULL, '2026-05-06', 'pemasukan'),
+(26, NULL, '2026-05-06', 'pemasukan'),
+(27, NULL, '2026-05-06', 'pemasukan'),
+(28, NULL, '2026-05-06', 'pemasukan'),
+(29, NULL, '2026-05-07', 'pemasukan'),
+(30, NULL, '2026-05-07', 'pemasukan'),
+(33, NULL, '2026-05-07', 'pengeluaran'),
+(34, NULL, '2026-05-22', 'pemasukan'),
+(35, NULL, '2026-05-22', 'pemasukan'),
+(36, NULL, '2026-05-22', 'pengeluaran'),
+(37, NULL, '2026-05-30', 'pemasukan'),
+(38, NULL, '2026-05-30', 'pemasukan');
 
 --
 -- Indexes for dumped tables
@@ -329,6 +416,19 @@ ALTER TABLE `produksi_telur`
   ADD KEY `id_petugas` (`id_petugas`);
 
 --
+-- Indexes for table `rekap_produksi_telur`
+--
+ALTER TABLE `rekap_produksi_telur`
+  ADD PRIMARY KEY (`id_rekap`),
+  ADD UNIQUE KEY `tanggal` (`tanggal`);
+
+--
+-- Indexes for table `stok_gudang`
+--
+ALTER TABLE `stok_gudang`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `telur_terjual`
 --
 ALTER TABLE `telur_terjual`
@@ -350,19 +450,19 @@ ALTER TABLE `transaksi`
 -- AUTO_INCREMENT for table `blok_kandang`
 --
 ALTER TABLE `blok_kandang`
-  MODIFY `id_blok_kandang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_blok_kandang` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `jadwal_vaksinasi`
 --
 ALTER TABLE `jadwal_vaksinasi`
-  MODIFY `id_jadwal_vaksinasi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_jadwal_vaksinasi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `pemasukan_ayam`
 --
 ALTER TABLE `pemasukan_ayam`
-  MODIFY `id_pemasukan_ayam` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_pemasukan_ayam` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `pemasukan_telur`
@@ -374,31 +474,37 @@ ALTER TABLE `pemasukan_telur`
 -- AUTO_INCREMENT for table `pengeluaran`
 --
 ALTER TABLE `pengeluaran`
-  MODIFY `id_pengeluaran` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_pengeluaran` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `petugas`
 --
 ALTER TABLE `petugas`
-  MODIFY `id_petugas` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_petugas` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `produksi_telur`
 --
 ALTER TABLE `produksi_telur`
-  MODIFY `id_produksi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_produksi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `rekap_produksi_telur`
+--
+ALTER TABLE `rekap_produksi_telur`
+  MODIFY `id_rekap` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `telur_terjual`
 --
 ALTER TABLE `telur_terjual`
-  MODIFY `id_jual` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_jual` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id_transaksi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id_transaksi` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- Constraints for dumped tables
