@@ -4,13 +4,16 @@ include ("koneksi.php");
 if (isset($_POST['register'])) {
     $nama = mysqli_real_escape_string($conn, $_POST['nama']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password']; 
+    
+    // Mengubah password polos menjadi hash MD5
+    $password = md5($_POST['password']); 
 
     $cek_email = mysqli_query($conn, "SELECT * FROM petugas WHERE email='$email'");
     
     if (mysqli_num_rows($cek_email) > 0) {
         echo "<script>alert('Email sudah digunakan, silakan gunakan email lain!');</script>";
     } else {
+        // Sekarang variabel $password yang masuk ke query sudah berupa 32 karakter acak MD5
         $query = mysqli_query($conn, "INSERT INTO petugas (nama_petugas, email, password) VALUES ('$nama', '$email', '$password')");
 
         if ($query) {

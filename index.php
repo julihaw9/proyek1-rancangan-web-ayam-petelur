@@ -4,12 +4,15 @@ include("koneksi.php");
 
 if (isset($_POST['login'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password'];
+    
+    // Mengubah password input menjadi MD5 agar cocok dengan yang ada di database
+    $password = md5($_POST['password']);
 
     $query = mysqli_query($conn, "SELECT * FROM petugas WHERE email='$email'");
     $data = mysqli_fetch_assoc($query);
 
     if ($data) {
+        // Sekarang membandingkan hash MD5 input dengan hash MD5 di database
         if ($password == $data['password']) {
             $_SESSION['login'] = true;
             $_SESSION['id_petugas'] = $data['id_petugas'];
